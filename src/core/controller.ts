@@ -4,7 +4,7 @@ import { SelectController, createSelectController } from "./controller-select";
 import { FocusController, createFocusController } from "./controller-focus";
 import { ControllerCommand } from "../types/type";
 import { DisableController, createDisableController } from "./controller-disable";
-import { DateRange } from "../utils/event-store";
+import { DateRange, excludeState } from "../utils/event-store";
 
 export type ControllerConfig = {
     selectedDates?: Array<Date | DateRange | string>;
@@ -20,7 +20,9 @@ export const createController = (config?: ControllerConfig): Controller => {
     const focusController = createFocusController($$bus, customParser);
     const {onSelectChange, ...selectController} = createSelectController($$bus, {selectedDates, customParser});
     const {onDisableChange, ...disableController} = createDisableController($$bus, {disabledDates, customParser});
-    
+
+    // month begin from monday or sunday
+
     const controller = {
         // @ts-ignore
         $$bus,
@@ -28,6 +30,7 @@ export const createController = (config?: ControllerConfig): Controller => {
         ...focusController,
         ...selectController,
         ...disableController,
+        getState: () => excludeState(controller.getSelected(), controller.getDisabled()),
         onFocusChange: (subscriber: (controller: Controller) => void) => $$bus.subscribe(() => subscriber(controller)),
         onSelectChange: (subscriber: (controller: Controller) => void) => onSelectChange(() => subscriber(controller)),
         onDisableChange: (subscriber: (controller: Controller) => void) => onDisableChange(() => subscriber(controller))
@@ -37,6 +40,7 @@ export const createController = (config?: ControllerConfig): Controller => {
 }
 
 type ControllerType = FocusController & SelectController & DisableController & {
+    getState: () => DateRange[];
     getConfig: () => ControllerConfig | undefined;
     onFocusChange: (subscriber: (controller: Controller) => void) => () => void;
     onSelectChange: (subscriber: (controller: Controller) => void) => () => void;

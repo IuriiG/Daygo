@@ -1,8 +1,8 @@
 import { setYear, toDate, today, setMonth, addYear, subtractYear, addMonth, subtractMonth } from "../utils/date";
 import { IBus } from "../utils/command-bus";
-import { ControllerCommand } from "../types/type";
+import { ControllerCommand, CustomParser } from "../types/type";
 import { Action, Simplify, ToCamelCase } from "../types/type-utils";
-import { castDate, toCamelCase } from "../utils/common";
+import { castDate, isNumber, toCamelCase } from "../utils/common";
 
 const toDateWrapper = (toDateFn: typeof toDate) => {
     return (_: Date, date: Parameters<typeof toDate>[0]) => toDateFn(date);
@@ -28,16 +28,20 @@ export type FocusController = {
     [P in keyof FocusHandlersMap as ToCamelCase<P>]: Simplify<Action<FocusHandlersMap[P]>>
 }
 
-export const createFocusAction = (bus: IBus<ControllerCommand>, customParser?: (date: string) => Date) => {
+export const createFocusAction = (bus: IBus<ControllerCommand>, customParser?: CustomParser) => {
     return <T extends FocusCommand>(type: T): Simplify<Action<FocusHandlersMap[T]>> => {
         return (payload?: unknown) => {
-            payload = payload && castDate(payload, customParser);
-            bus.send({type, payload})
+            if (!payload || isNumber(payload)) {
+                bus.send({type, payload});
+                return;
+            }
+
+            bus.send({type, payload: castDate(payload, customParser)})
         }
     }
 }
 
-export const createFocusController = (bus: IBus<ControllerCommand>, customParser?: (date: string) => Date) => {
+export const createFocusController = (bus: IBus<ControllerCommand>, customParser?: CustomParser) => {
     const action = createFocusAction(bus, customParser);
 
     return (Object.keys(focusCommandHandlers) as FocusCommand[]).reduce((acc, c) => {

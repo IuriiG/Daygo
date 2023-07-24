@@ -7,31 +7,6 @@ export const createRangeSelector = () => {
     let isActive = false;
     let rangeEvent = createEmptyRange();
 
-    const updateSelectorBegin = (_: IEventStore, date: Date | null) => {
-        const {from, to}  = rangeEvent.value();
-        if (isSame(from, date)) return;
-        rangeEvent.value({from: date || to, to})
-    }
-
-    const updateSelectorEnd = (_: IEventStore, date: Date | null) => {
-        const {from, to}  = rangeEvent.value();
-        if (isSame(to, date)) return;
-        rangeEvent.value({from, to: date || from})
-    }
-
-    const updateSelectorFull = (_: IEventStore, from: Date, to: Date) => {
-        const {from: prevFrom, to: prevTo}  = rangeEvent.value();
-        if (isSame(prevFrom, from) && isSame(prevTo, to)) return;
-        rangeEvent.value({from, to});
-    }
-
-    const resetSelector = (store: IEventStore) => {
-        store.remove(rangeEvent);
-        rangeEvent = createEmptyRange();
-
-        store.publish(rangeEvent);
-    }
-
     const updateSelector = (_: IEventStore, date: Date) => {
         if (!isActive) return;
 
@@ -45,7 +20,10 @@ export const createRangeSelector = () => {
         isActive = !isActive;
 
         if (isActive) {
-            resetSelector(store);
+            store.remove(rangeEvent);
+            rangeEvent = createEmptyRange();
+
+            store.publish(rangeEvent);
             rangeEvent.value({from: date, to: date})
         }
 
@@ -54,10 +32,6 @@ export const createRangeSelector = () => {
 
     return {
         updateSelector,
-        updateSelectorBegin,
-        updateSelectorEnd,
-        updateSelectorFull,
-        activateSelector,
-        resetSelector
+        activateSelector
     };
 }

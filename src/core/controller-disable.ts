@@ -1,16 +1,16 @@
 import { IBus } from "../utils/command-bus";
-import { createBasicController } from "./controller-basic";
-import { ControllerCommand } from "../types/type";
+import { createBaseController } from "./controller-base";
+import { ControllerCommand, CustomParser } from "../types/type";
 import { DateRange } from "../utils/event-store";
 
 export type DisableControllerInit = {
     disabledDates?: Array<Date | DateRange | string>;
-    customParser?: (date: string) => Date;
+    customParser?: CustomParser;
 }
 
 export const createDisableController = (bus: IBus<ControllerCommand>, init: DisableControllerInit) => {
     const {disabledDates, customParser} = init;
-    const basicController = createBasicController(bus, {
+    const basicController = createBaseController(bus, {
         initState: disabledDates,
         customParser
     });

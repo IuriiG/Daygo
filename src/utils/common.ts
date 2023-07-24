@@ -23,6 +23,14 @@ export function isFunction(v: unknown): v is Function {
     return typeof v === 'function';
 }
 
+export function isBoolean(v: unknown): v is boolean {
+    return typeof v === 'boolean';
+}
+
+export function isUndefined(v: unknown): v is undefined {
+    return v === undefined;
+}
+
 export function pad(n: number): string | number {
     return n < 10 ? `0${n}` : n;
 }

@@ -25,36 +25,36 @@ export function daysInMonth(date: Date) {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
 }
 
-export function addMonth(date: Date, amount = 1): Date {
+export function addMonth(date: Date, offset = 1): Date {
     const clone = cloneDate(date);
-    clone.setMonth(clone.getMonth() + amount, 1);
+    clone.setMonth(clone.getMonth() + offset, 1);
     clone.setDate(Math.min(date.getDate(), daysInMonth(clone)));
     return clone;
 }
 
-export function subtractMonth(date: Date, amount = 1): Date {
-    return addMonth(date, -amount);
+export function subtractMonth(date: Date, offset = 1): Date {
+    return addMonth(date, -offset);
 }
 
 export function cloneDate(date: Date): Date {
     return new Date(date.getTime());
 }
 
-export function subtractYear(date: Date, amount = 1): Date {
-    return addMonth(date, -(amount * 12));
+export function subtractYear(date: Date, offset = 1): Date {
+    return addMonth(date, -(offset * 12));
 }
 
-export function addYear(date: Date, amount = 1): Date {
-    return addMonth(date, amount * 12);
+export function addYear(date: Date, offset = 1): Date {
+    return addMonth(date, offset * 12);
 }
 
-export function subtractDay(date: Date, amount = 1): Date {
-    return addDay(date, -amount);
+export function subtractDay(date: Date, offset = 1): Date {
+    return addDay(date, -offset);
 }
 
-export function addDay(date: Date, amount = 1): Date {
+export function addDay(date: Date, offset = 1): Date {
     const newDate = getDate(date);
-    newDate.setDate(date.getDate() + amount);
+    newDate.setDate(date.getDate() + offset);
     return newDate;
 }
 
@@ -95,8 +95,8 @@ export function setFirstDayOfMonth(date: Date): Date {
 }
 
 export function getDate(date?: Date): Date {
-    const _date = isDate(date) ? cloneDate(date) : new Date();
-    _date.setUTCHours(0, 0, 0, 0)
+    const _date = date ? new Date(date) : new Date();
+    _date.setUTCHours(0, 0, 0, 0);
     return _date;
 }
 
@@ -109,11 +109,9 @@ export function parse(date: string): Date {
 }
 
 export function toISO(date: Date) {
-    const _date = getDate(date);
-
-    const year = _date.getFullYear();
-    const month = pad(_date.getMonth() + 1);
-    const day = pad(_date.getDate());
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
     
     return `${year}-${month}-${day}T00:00:00.000Z`
 }

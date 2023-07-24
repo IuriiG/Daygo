@@ -1,47 +1,36 @@
 import { IBus } from "../utils/command-bus";
 import { createRangeSelector } from "../utils/select-range";
-import { createBasicController } from "./controller-basic";
-import { ControllerCommand } from "../types/type";
+import { createBaseController } from "./controller-base";
+import { ControllerCommand, CustomParser } from "../types/type";
 import { DateRange } from "../utils/event-store";
 
 export type SelectControllerInit = {
     selectedDates?: Array<Date | DateRange | string>;
-    customParser?: (date: string) => Date;
+    customParser?: CustomParser;
 }
 
 export const createSelectController = (bus: IBus<ControllerCommand>, init: SelectControllerInit) => {
-    const {selectedDates, customParser} = init;
-    const {
-        updateSelector,
-        updateSelectorBegin,
-        updateSelectorEnd,
-        updateSelectorFull,
-        activateSelector,
-        resetSelector
-    } = createRangeSelector();
+    const { selectedDates, customParser } = init;
+    const { updateSelector, activateSelector } = createRangeSelector();
 
-    const {bind, ...basicController} = createBasicController(bus, {
+    const {bind, ...basicController} = createBaseController(bus, {
         initState: selectedDates,
         customParser
     });
 
     return {
         isSelected: basicController.is,
-        selectDate: basicController.add, // equivalent to updateRange
+        selectDate: basicController.add,
         unselectDate: basicController.remove,
-        resetSelected: basicController.reset, // reset also range (resetRange)
+        resetSelected: basicController.reset,
         getSelected: basicController.getState,
-        toggleSelectDate: basicController.toggle, // maybe need to add not only 'from', also 'to'
+        toggleSelectDate: basicController.toggle,
         selectDateMultiple: basicController.replace,
         removeSelectEvent: basicController.removeEvent,
         publishSelectEvent: basicController.publishEvent,
         onSelectChange: basicController.subscribe,
         startStopRangeAuto: bind(activateSelector),
-        updateRangeAuto: bind(updateSelector),
-        updateRangeBegin: bind(updateSelectorBegin), // maybe it is not necessery, cause selectDate can create static range
-        updateRangeEnd: bind(updateSelectorEnd), // maybe it is not necessery, cause selectDate can create static range
-        updateRange: bind(updateSelectorFull), // maybe it is not necessery, cause selectDate can create static range
-        resetRange: bind(resetSelector) // maybe it is not necessery, cause selectDate can create static range
+        updateRangeAuto: bind(updateSelector)
     }
 }
 

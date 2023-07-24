@@ -12,19 +12,20 @@ import { castDate } from "../utils/common";
 type DatePickerConfig = ControllerConfig & {
     controller?: Controller;
     defaultMonth?: Date | string;
+    isFixed?: boolean;
 }
 
 export const createDatePicker = (config?: DatePickerConfig) => {
-    const {controller: external, defaultMonth, ...controllerConfig} = config || {};
-    const dateParser = config?.customParser
-        || (external as ControllerWithBus)?.$$getConfig()?.customParser;
+    const {controller: external, defaultMonth, isFixed = false, ...controllerConfig} = config || {};
+    const customParser = config?.customParser
+        || external?.getConfig()?.customParser;
 
     let version = 0;
 
     let monthGrid: IDay[] = [];
     let focusedDate = setFirstDayOfMonth(
         defaultMonth
-            ? castDate(defaultMonth, dateParser)
+            ? castDate(defaultMonth, customParser)
             : today()
         );
 
@@ -42,12 +43,12 @@ export const createDatePicker = (config?: DatePickerConfig) => {
     
     const recalculate = () => {
         monthGrid.forEach((day) => {
-            updateDay(day, update, {
-                isSelected: controller.isSelected(day.date),
-                isDisabled: controller.isDisabled(day.date)
-            })
+            const isDisabled = controller.isDisabled(day.date);
+            const isSelected = !isDisabled && controller.isSelected(day.date);
+
+            updateDay(day, update, { isSelected, isDisabled })
         })
-    }
+    };
 
     const connect = () => (controller as ControllerWithBus).$$bus.subscribe(share.next);
 
@@ -55,23 +56,25 @@ export const createDatePicker = (config?: DatePickerConfig) => {
         update();
         controller = next;
         connectionDispose = connect();
-    }
+    };
 
     const commandHandler = (command: ControllerCommand) => {
         const handler = focusCommandHandlers[command.type as FocusCommand];
-
+    
         if (handler) {
-            const prevFocusDate = focusedDate;
-            const {payload} = command as FocusControllerCommand;
-
+            const previousDate = focusedDate;
+            const { payload } = command as FocusControllerCommand;
+    
             focusedDate = handler(focusedDate, payload);
-
-            if (isSame(prevFocusDate, focusedDate)) return;
-
+    
+            if (isSame(previousDate, focusedDate)) {
+                return;
+            }
+    
             update();
             return;
         }
-
+    
         recalculate();
     }
 
@@ -98,9 +101,10 @@ export const createDatePicker = (config?: DatePickerConfig) => {
             if (!monthGrid.length) {
                 monthGrid = generateMonth(
                     focusedDate,
+                    isFixed,
                     controller.isSelected,
                     controller.isDisabled
-                )
+                );
             }
     
             return monthGrid;
@@ -110,9 +114,17 @@ export const createDatePicker = (config?: DatePickerConfig) => {
     return dp;
 }
 
-function generateMonth (date: Date, isSelected: (date: Date) => boolean, isDisabled: (date: Date) => boolean): IDay[] {
-    const length = getGridLength(date);
-    const firstDayOfPrevMonth = subtractDay(setFirstDayOfMonth(date), getPrevMonthLength(date));
+function generateMonth (
+    date: Date,
+    isFixed: boolean,
+    isSelected: (date: Date) => boolean,
+    isDisabled: (date: Date) => boolean
+): IDay[] {
+    const length = getGridLength(date, isFixed);
+    const firstDayOfPrevMonth = subtractDay(
+        setFirstDayOfMonth(date),
+        getPrevMonthLength(date)
+    );
 
     return Array.from({length}, (_, i) => {
         const thisDate = addDay(firstDayOfPrevMonth, i);

@@ -1,6 +1,6 @@
 import { castDate, isDate, isString } from "./common";
 import { addDay, subtractDay } from "./date";
-import { rangeOf } from "./helpers";
+import { isInRange, rangeOf } from "./helpers";
 import { Subscribe, createObservable } from "./observable";
 
 export enum EventTypes {
@@ -95,7 +95,7 @@ export function initStateToEvents(init?: EventStoreInit): IEvent[] {
     });
 }
 
-export function createEventStore(comparator: (date: Date, value: DateRange) => boolean, init: IEvent[]): IEventStore {
+export function createEventStore(init: IEvent[]): IEventStore {
     const {notify, subscribe} = createObservable();
     let events: IEvent[] = init;
 
@@ -114,102 +114,105 @@ export function createEventStore(comparator: (date: Date, value: DateRange) => b
         publish(createEvent(EventTypes.REMOVE, event.value()));
     };
 
-    const query = (date: Date) => {
-        for (let i = events.length - 1; i >=0; i--) {
-            const event = events[i];
-            const value = event.value();
+    const query = (date: Date) => queryState(events, date);
 
-            if (!value) continue;
-
-            if (comparator(date, value)) {
-                return event.type === EventTypes.ADD ? value : null;
-            }
-        }
-
-        return null;
-    };
-
-    const getState = () => events.reduce((acc, event) => {
-            const value = event.value();
-
-            if (!value) return acc;
-
-            if (event.type === EventTypes.ADD) {
-                return mergeAddEvent(acc, value)
-            }
-
-            return mergeRemoveEvent(acc, value)
-        }, [] as DateRange[]);
+    const getState = () => flatState(events);
 
     return {clear, remove, query, publish, subscribe, getState}
 }
 
-function mergeAddEvent(events: DateRange[], event: DateRange): DateRange[] {
-    let [start, end] = getRange(event);
+export function queryState(events: IEvent[], date: Date) {
+    for (let i = events.length - 1; i >= 0; i--) {
+        const event = events[i];
+        const value = event.value();
 
-    const res = events.reduce((acc, eachEvent) => {
-        const [from, to] = getRange(eachEvent);
-
-        if (start > to || end < from) {
-            acc.push(eachEvent);
-            return acc;
+        if (value && isInRange(date, value)) {
+            return event.type === EventTypes.ADD ? value : null;
         }
+    }
 
-        if (from <= start && start <= to) {
-            end = Math.max(to, end); 
-        }
-
-        if (from <= end && end <= to) {
-            start = Math.min(start, from);
-        }
-
-        return acc;
-    }, [] as DateRange[]);
-
-    res.push({
-        from: numberToDate(start),
-        to: numberToDate(end)
-    });
-
-    return res;
+    return null;
 }
 
-function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRange[] {
-    const [start, end] = getRange(event);
+export function flatState(events: IEvent[]): DateRange[] {
+    return events.reduce((acc, event) => {
+        const value = event.value();
 
-    const res = events.reduce((acc, eachEvent) => {
+        if (!value) return acc;
+
+        if (event.type === EventTypes.ADD) {
+            return mergeAddEvent(acc, value);
+        }
+
+        return mergeRemoveEvent(acc, value);
+    }, [] as DateRange[]);
+}
+
+export function mergeAddEvent(events: DateRange[], event: DateRange): DateRange[] {
+    const [start, end] = getRange(event);
+    const mergedEvents: DateRange[] = [];
+    let newStart = start;
+    let newEnd = end;
+
+    for (const eachEvent of events) {
         const [from, to] = getRange(eachEvent);
 
         if (start > to || end < from) {
-            acc.push(eachEvent);
-            return acc;
+            mergedEvents.push(eachEvent);
+            continue;
+        }
+
+        newStart = Math.min(newStart, from);
+        newEnd = Math.max(newEnd, to);
+    }
+
+    mergedEvents.push({
+        from: numberToDate(newStart),
+        to: numberToDate(newEnd)
+    });
+
+    return mergedEvents;
+}
+
+export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRange[] {
+    const [start, end] = getRange(event);
+    const res: DateRange[] = [];
+
+    for (const eachEvent of events) {
+        const [from, to] = getRange(eachEvent);
+
+        if (end < from || to < start) {
+            res.push(eachEvent);
+            continue;
         }
 
         if (start > from && to < end) {
-            return acc;
+            continue;
         }
 
         if (from < start && start <= to) {
-            acc.push({
+            res.push({
                 from: numberToDate(from),
                 to: numberToDate(start, subtractDay)
             });
         }
 
         if (from <= end && end < to) {
-            acc.push({
+            res.push({
                 from: numberToDate(end, addDay),
                 to: numberToDate(to)
             });
         }
-
-        return acc;
-    }, [] as DateRange[]);
+    }
 
     return res;
 }
 
-function getRange(eventRange: DateRange) {
+export function excludeState (targetState: DateRange[], exclude: DateRange[]) {
+    return exclude.reduce(mergeRemoveEvent, targetState);
+}
+
+export function getRange(eventRange: DateRange) {
     const {from, to} = rangeOf(eventRange.from, eventRange.to);
     return [
         from?.getTime() ?? -Infinity,
@@ -217,7 +220,7 @@ function getRange(eventRange: DateRange) {
     ]
 }
 
-function numberToDate(date: number, modificator?: (date: Date) => Date) {
+export function numberToDate(date: number, modificator?: (date: Date) => Date) {
     return Number.isFinite(date)
         ? modificator ? modificator(new Date(date)) : new Date(date)
         : undefined

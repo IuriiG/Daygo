@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FocusCommand } from "../core/controller-focus"
-import { SharedCommand } from "../core/controller-basic";
+import { SharedCommand } from "../core/controller-base";
 
 export type FocusControllerCommand = {
     type: FocusCommand;
@@ -12,3 +12,5 @@ export type SharedControllerCommand = {
 }
 
 export type ControllerCommand = SharedControllerCommand | FocusControllerCommand;
+
+export type CustomParser = (date: string) => Date;

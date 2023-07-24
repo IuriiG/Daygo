@@ -1,6 +1,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { createDatePicker } from "./core/date-picker"
 import { useConst } from "./hooks/useConst"
+import { Controller } from "./core/controller";
 
 let count = 0;
 let grid: any;
@@ -43,7 +44,9 @@ function App() {
     c.getSelected()
     c.isDisabled()
     c.isSelected()
-    c.onDisableChange()
+    c.onDisableChange((controllerLocal: Controller) => {
+        controllerLocal.showNextMonth();
+    })
     c.onSelectChange()
     c.publishDisableEvent()
     c.publishSelectEvent()
