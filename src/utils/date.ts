@@ -1,4 +1,4 @@
-import { isDate, isNumber, isString, pad } from "./common";
+import { isNumber, isString, pad } from "./common";
 
 export function isToday(date: Date) {
     return isSame(new Date(), date);

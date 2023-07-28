@@ -99,12 +99,15 @@ export const createDatePicker = (config?: DatePickerConfig) => {
         replaceController,
         get month() {
             if (!monthGrid.length) {
+                const start = performance.now();
                 monthGrid = generateMonth(
                     focusedDate,
                     isFixed,
                     controller.isSelected,
                     controller.isDisabled
                 );
+                const delta = performance.now() - start;
+                console.log('[MONTH_GENERATE]', delta);
             }
     
             return monthGrid;

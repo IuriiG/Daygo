@@ -37,37 +37,37 @@ function App() {
 
     // console.table(month)
 
-    c.disableDate()
-    c.disableDateToggle()
-    c.enableDate()
-    c.getDisabled()
-    c.getSelected()
-    c.isDisabled()
-    c.isSelected()
-    c.onDisableChange((controllerLocal: Controller) => {
-        controllerLocal.showNextMonth();
-    })
-    c.onSelectChange()
-    c.publishDisableEvent()
-    c.publishSelectEvent()
-    c.removeDisableEvent()
-    c.removeSelectEvent()
-    c.resetDisabled()
-    c.resetSelected()
-    c.selectDate()
-    c.selectDateMultiple()
-    c.showDate()
-    c.showMonth()
-    c.showNextMonth()
-    c.showNextYear()
-    c.showPrevMonth()
-    c.showPrewYear()
-    c.showToday()
-    c.showYear()
-    c.startStopSelectRange()
-    c.toggleSelectDate()
-    c.unselectDate()
-    c.updateRangeAuto()
+    // c.disableDate()
+    // c.disableDateToggle()
+    // c.enableDate()
+    // c.getDisabled()
+    // c.getSelected()
+    // c.isDisabled()
+    // c.isSelected()
+    // c.onDisableChange((controllerLocal: Controller) => {
+    //     controllerLocal.showNextMonth();
+    // })
+    // c.onSelectChange()
+    // c.publishDisableEvent()
+    // c.publishSelectEvent()
+    // c.removeDisableEvent()
+    // c.removeSelectEvent()
+    // c.resetDisabled()
+    // c.resetSelected()
+    // c.selectDate()
+    // c.selectDateMultiple()
+    // c.showDate()
+    // c.showMonth()
+    // c.showNextMonth()
+    // c.showNextYear()
+    // c.showPrevMonth()
+    // c.showPrewYear()
+    // c.showToday()
+    // c.showYear()
+    // c.startStopSelectRange()
+    // c.toggleSelectDate()
+    // c.unselectDate()
+    // c.updateRangeAuto()
     
     return (
         <>
@@ -84,6 +84,7 @@ function App() {
                     }
                     const background = day.isSelected ? 'red' : 'transparent';
                     // console.table({date: day.date, isSelected: day.isSelected, background})
+                    console.log(day.iso, day.date.toISOString(), day.date)
                     return (
                         <div key={day.iso}
                             // onClick={() => dp.controller.toggleSelectDate(day.date)}
@@ -93,7 +94,7 @@ function App() {
                             onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
                             onClick={() => {
                                 if (isSelect) {
-                                    dp.controller.startStopSelectRange(day.date)
+                                    dp.controller.startStopRangeAuto(day.date)
                                     return
                                 }
 

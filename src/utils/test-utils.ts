@@ -5,3 +5,7 @@ export function flushPromises() {
         scheduler(resolve, 0)
     })
 }
+
+export const call = (cb: () => void, times = 1) => {
+    for(let i = 0; i < times; i++) cb();
+}

@@ -1,5 +1,5 @@
 import { createEffect } from "./effect";
-import { flushPromises } from "./test-utils";
+import { call, flushPromises } from "./test-utils";
 
 describe('Create effect', () => {
     it ('createEffect', async () => {
@@ -12,7 +12,7 @@ describe('Create effect', () => {
 
         expect(cb).toHaveBeenCalledTimes(1);
 
-        Array.from({length: 10}, effect);
+        call(effect, 10);
 
         await flushPromises();
 

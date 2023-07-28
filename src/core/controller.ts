@@ -22,6 +22,7 @@ export const createController = (config?: ControllerConfig): Controller => {
     const {onDisableChange, ...disableController} = createDisableController($$bus, {disabledDates, customParser});
 
     // month begin from monday or sunday
+    // isFocused
 
     const controller = {
         // @ts-ignore

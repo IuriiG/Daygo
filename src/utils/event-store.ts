@@ -175,21 +175,27 @@ export function mergeAddEvent(events: DateRange[], event: DateRange): DateRange[
 }
 
 export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRange[] {
+    // start=2, end=Infinity
     const [start, end] = getRange(event);
     const res: DateRange[] = [];
 
+    // 1 event total
     for (const eachEvent of events) {
+        // from=1, to=3
         const [from, to] = getRange(eachEvent);
 
+        // false || false
         if (end < from || to < start) {
             res.push(eachEvent);
             continue;
         }
 
-        if (start > from && to < end) {
+        // false && true
+        if (start < from && to < end) {
             continue;
         }
 
+        // true && true
         if (from < start && start <= to) {
             res.push({
                 from: numberToDate(from),
@@ -197,6 +203,7 @@ export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRan
             });
         }
 
+        // false && false
         if (from <= end && end < to) {
             res.push({
                 from: numberToDate(end, addDay),
