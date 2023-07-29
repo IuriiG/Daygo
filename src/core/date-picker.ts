@@ -96,6 +96,7 @@ export const createDatePicker = (config?: DatePickerConfig) => {
         subscribe,
         controller,
         getSnapshot,
+        focusedDate,
         replaceController,
         get month() {
             if (!monthGrid.length) {

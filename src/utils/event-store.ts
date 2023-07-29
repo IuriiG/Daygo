@@ -32,7 +32,7 @@ export function add(store: IEventStore, from: Date, to?: Date): void {
 }
 
 export function replace(store: IEventStore, from: Date, to?: Date): void {
-    reset(store);
+    clear(store);
     add(store, from, to);
 }
 
@@ -50,7 +50,7 @@ export function dateToggle(store: IEventStore, date: Date): void {
     add(store, date);
 }
 
-export function reset(store: IEventStore) {
+export function clear(store: IEventStore) {
     store.clear();
 }
 
@@ -105,6 +105,7 @@ export function createEventStore(init: IEvent[]): IEventStore {
     };
 
     const publish = (event: IEvent) => {
+        if (events.includes(event)) return;
         event.subscribe(notify);
         events.push(event);
         notify();
@@ -175,27 +176,21 @@ export function mergeAddEvent(events: DateRange[], event: DateRange): DateRange[
 }
 
 export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRange[] {
-    // start=2, end=Infinity
     const [start, end] = getRange(event);
     const res: DateRange[] = [];
 
-    // 1 event total
     for (const eachEvent of events) {
-        // from=1, to=3
         const [from, to] = getRange(eachEvent);
 
-        // false || false
         if (end < from || to < start) {
             res.push(eachEvent);
             continue;
         }
 
-        // false && true
         if (start < from && to < end) {
             continue;
         }
 
-        // true && true
         if (from < start && start <= to) {
             res.push({
                 from: numberToDate(from),
@@ -203,7 +198,6 @@ export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRan
             });
         }
 
-        // false && false
         if (from <= end && end < to) {
             res.push({
                 from: numberToDate(end, addDay),

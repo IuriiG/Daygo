@@ -19,7 +19,9 @@ export const createCommandBus = <T>(): IBus<T> => {
 
     const subscribe = (subscriber: (command: T) => void) => {
         return observable.subscribe(() => {
-            queue.forEach(subscriber);
+            queue.forEach((command) => {
+                subscriber(command);
+            });
             clearQueue();
         });
     }

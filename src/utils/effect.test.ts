@@ -1,7 +1,7 @@
 import { createEffect } from "./effect";
 import { call, flushPromises } from "./test-utils";
 
-describe('Create effect', () => {
+describe('Utils: effect', () => {
     it ('createEffect', async () => {
         const cb = vi.fn();
         const effect = createEffect(cb);

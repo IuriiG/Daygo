@@ -1,7 +1,7 @@
 import { createObservable } from "./observable"
 import { call, flushPromises } from "./test-utils";
 
-describe('Observable', () => {
+describe('Utils: observable', () => {
     it('Create observable', async () => {
         const observable = createObservable();
 

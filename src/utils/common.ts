@@ -3,10 +3,6 @@
 import { ToCamelCase } from "../types/type-utils";
 import { getDate, parse } from "./date";
 
-export function toArray<T>(v: T | T[]): T[] {
-    return Array.isArray(v) ? v : [v];
-}
-
 export function isNumber(v: unknown): v is number {
     return typeof v === 'number' && !Number.isNaN(v) && Number.isFinite(v);
 }
@@ -23,16 +19,8 @@ export function isFunction(v: unknown): v is Function {
     return typeof v === 'function';
 }
 
-export function isBoolean(v: unknown): v is boolean {
-    return typeof v === 'boolean';
-}
-
-export function isUndefined(v: unknown): v is undefined {
-    return v === undefined;
-}
-
-export function pad(n: number): string | number {
-    return n < 10 ? `0${n}` : n;
+export function pad(n: number): string {
+    return n < 10 ? `0${n}` : `${n}`;
 }
 
 export const toCamelCase = <T extends string>(s: T): ToCamelCase<T> => s
