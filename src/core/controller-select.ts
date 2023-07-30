@@ -20,12 +20,12 @@ export const createSelectController = (bus: IBus<ControllerCommand>, init: Selec
 
     return {
         isSelected: basicController.is,
-        selectDate: basicController.add,
+        selectDate: basicController.replace,
         unselectDate: basicController.remove,
         resetSelected: basicController.reset,
         getSelected: basicController.getState,
         toggleSelectDate: basicController.toggle,
-        selectDateMultiple: basicController.replace,
+        selectDateMultiple: basicController.add,
         removeSelectEvent: basicController.removeEvent,
         publishSelectEvent: basicController.publishEvent,
         onSelectChange: basicController.subscribe,

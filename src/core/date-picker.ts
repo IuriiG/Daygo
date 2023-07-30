@@ -1,6 +1,6 @@
 import { addDay, isSame, setFirstDayOfMonth, subtractDay, today } from "../utils/date";
 import { createEffect } from "../utils/effect";
-import { getGridLength, getPrevMonthLength } from "../utils/helpers";
+import { WeekStarts, getMonthLength, calculatePrevMonthLength } from "../utils/helpers";
 import { Subscribe, createObservable } from "../utils/observable";
 import { createShare } from "../utils/share";
 import { Controller, ControllerConfig, ControllerWithBus, createController } from "./controller";
@@ -13,10 +13,18 @@ type DatePickerConfig = ControllerConfig & {
     controller?: Controller;
     defaultMonth?: Date | string;
     isFixed?: boolean;
+    weekStartsOn?: WeekStarts;
 }
 
 export const createDatePicker = (config?: DatePickerConfig) => {
-    const {controller: external, defaultMonth, isFixed = false, ...controllerConfig} = config || {};
+    const {
+        defaultMonth,
+        isFixed = false,
+        weekStartsOn = 'monday',
+        controller: external,
+        ...controllerConfig
+    } = config || {};
+
     const customParser = config?.customParser
         || external?.getConfig()?.customParser;
 
@@ -100,15 +108,13 @@ export const createDatePicker = (config?: DatePickerConfig) => {
         replaceController,
         get month() {
             if (!monthGrid.length) {
-                const start = performance.now();
                 monthGrid = generateMonth(
                     focusedDate,
                     isFixed,
+                    weekStartsOn,
                     controller.isSelected,
                     controller.isDisabled
                 );
-                const delta = performance.now() - start;
-                console.log('[MONTH_GENERATE]', delta);
             }
     
             return monthGrid;
@@ -121,13 +127,17 @@ export const createDatePicker = (config?: DatePickerConfig) => {
 function generateMonth (
     date: Date,
     isFixed: boolean,
+    weekStartsOn: WeekStarts,
     isSelected: (date: Date) => boolean,
     isDisabled: (date: Date) => boolean
 ): IDay[] {
-    const length = getGridLength(date, isFixed);
+    const length = getMonthLength(date, isFixed);
     const firstDayOfPrevMonth = subtractDay(
         setFirstDayOfMonth(date),
-        getPrevMonthLength(date)
+        calculatePrevMonthLength(date, {
+            isFixed,
+            weekStartsOn
+        })
     );
 
     return Array.from({length}, (_, i) => {

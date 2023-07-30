@@ -10,14 +10,14 @@ const toDateWrapper = (toDateFn: typeof toDate) => {
 
 // maybe to add a different wrapper to each 
 export const focusCommandHandlers = {
-    SHOW_TODAY: today,
-    SHOW_YEAR: setYear,
-    SHOW_MONTH: setMonth,
-    SHOW_NEXT_YEAR: addYear,
-    SHOW_NEXT_MONTH: addMonth,
-    SHOW_PREW_YEAR: subtractYear,
-    SHOW_PREV_MONTH: subtractMonth,
-    SHOW_DATE: toDateWrapper(toDate),
+    FOCUS_TODAY: today,
+    FOCUS_YEAR: setYear,
+    FOCUS_MONTH: setMonth,
+    FOCUS_NEXT_YEAR: addYear,
+    FOCUS_NEXT_MONTH: addMonth,
+    FOCUS_PREW_YEAR: subtractYear,
+    FOCUS_PREV_MONTH: subtractMonth,
+    FOCUS_DATE: toDateWrapper(toDate),
 }
 
 export type FocusHandlersMap = typeof focusCommandHandlers;

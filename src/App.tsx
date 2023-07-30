@@ -14,7 +14,7 @@ const m = {
 }
 
 function App() {
-    const dp = useConst(createDatePicker);
+    const dp = useConst(() => createDatePicker({isFixed: true, weekStartsOn: 'sunday'}));
     const [isSelect, setIsSelect] = useState(true);
     const toggle = () => setIsSelect(prev => !prev)
     const c = dp.controller;
@@ -79,12 +79,12 @@ function App() {
         }}>
             {
                 dp.month.map((day) => {
-                    if (day.isSelected) {
-                        console.log(day)
-                    }
+                    // if (day.isSelected) {
+                    //     console.log(day)
+                    // }
                     const background = day.isSelected ? 'red' : 'transparent';
                     // console.table({date: day.date, isSelected: day.isSelected, background})
-                    console.log(day.iso, day.date.toISOString(), day.date)
+                    // console.log(day.iso, day.date.toISOString(), day.date)
                     return (
                         <div key={day.iso}
                             // onClick={() => dp.controller.toggleSelectDate(day.date)}
@@ -113,8 +113,8 @@ function App() {
             }
         </div>
         <div>
-            <button type='button' onClick={() => dp.controller.showPrevMonth()}>PREV MONTH</button>
-            <button type='button' onClick={() => dp.controller.showNextMonth(2)}>NEXT MONTH</button>
+            <button type='button' onClick={() => dp.controller.focusPrevMonth()}>PREV MONTH</button>
+            <button type='button' onClick={() => dp.controller.focusNextMonth(2)}>NEXT MONTH</button>
             <button type='button' onClick={toggle}>TOGGLE IS SELECT</button>
             <button type='button' onClick={() => {
                 console.log(dp.controller.getSelected())
