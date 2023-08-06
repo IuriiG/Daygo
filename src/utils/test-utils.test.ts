@@ -28,5 +28,5 @@ describe('Test utils', () => {
 
         expect(a).toBe(1);
         expect(b).toBe(2);
-    })
-})
+    });
+});

@@ -9,17 +9,7 @@ import {
 } from "../utils/date";
 import { DateRange } from "./event-store";
 
-export const weekDayNumbers = {
-    sunday: 0,
-    monday: 1,
-    tuesday: 2,
-    wednesday: 3,
-    thursday: 4,
-    friday: 5,
-    saturday: 6
-};
-
-export type WeekStarts = keyof typeof weekDayNumbers;
+export type WeekStarts = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export function isInRange(date: Date, range: DateRange) {
     const { from: rawFrom, to: rawTo } = range;
@@ -36,11 +26,10 @@ export function isWeekendCheck (dayNumber: number): boolean {
 }
 
 export function calculatePrevMonthLength(date: Date, opts?: { isFixed: boolean, weekStartsOn: WeekStarts }): number {
-    const { isFixed, weekStartsOn = 'monday' } = opts || {};
+    const { isFixed, weekStartsOn = 1 } = opts || {};
     const firstDayNumber = dayNumber(setFirstDayOfMonth(date));
-    const weekStartsOnNum = weekDayNumbers[weekStartsOn] ?? 1;
 
-    return isFixed && firstDayNumber === 1 ? 7 : firstDayNumber - weekStartsOnNum;
+    return isFixed && firstDayNumber === 1 ? 7 : firstDayNumber - weekStartsOn;
 }
 
 export function calculateMonthLength (date: Date): number {

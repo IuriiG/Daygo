@@ -10,17 +10,17 @@ import { ControllerCommand, FocusControllerCommand } from "../types/type";
 import { castDate } from "../utils/common";
 
 type DatePickerConfig = ControllerConfig & {
-    controller?: Controller;
-    defaultMonth?: Date | string;
     isFixed?: boolean;
+    controller?: Controller;
     weekStartsOn?: WeekStarts;
+    defaultMonth?: Date | string;
 }
 
 export const createDatePicker = (config?: DatePickerConfig) => {
     const {
         defaultMonth,
         isFixed = false,
-        weekStartsOn = 'monday',
+        weekStartsOn = 1,
         controller: external,
         ...controllerConfig
     } = config || {};

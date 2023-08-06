@@ -42,10 +42,10 @@ export const createFocusAction = (bus: IBus<ControllerCommand>, customParser?: C
 }
 
 export const createFocusController = (bus: IBus<ControllerCommand>, customParser?: CustomParser) => {
-    const action = createFocusAction(bus, customParser);
+    const bindCommand = createFocusAction(bus, customParser);
 
     return (Object.keys(focusCommandHandlers) as FocusCommand[]).reduce((acc, c) => {
-        acc[toCamelCase(c)] = action(c);
+        acc[toCamelCase(c)] = bindCommand(c);
         return acc;
     }, {} as FocusController);
 }

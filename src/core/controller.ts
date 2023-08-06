@@ -2,14 +2,14 @@
 import { IBus, createCommandBus } from "../utils/command-bus";
 import { SelectController, createSelectController } from "./controller-select";
 import { FocusController, createFocusController } from "./controller-focus";
-import { ControllerCommand } from "../types/type";
+import { ControllerCommand, CustomParser, EventSubscriber } from "../types/type";
 import { DisableController, createDisableController } from "./controller-disable";
 import { DateRange, excludeState } from "../utils/event-store";
 
 export type ControllerConfig = {
     selectedDates?: Array<Date | DateRange | string>;
     disabledDates?: Array<Date | DateRange | string>;
-    customParser?: (date: string) => Date;
+    customParser?: CustomParser;
 }
 
 export const createController = (config?: ControllerConfig): Controller => {
@@ -21,8 +21,6 @@ export const createController = (config?: ControllerConfig): Controller => {
     const {onSelectChange, ...selectController} = createSelectController($$bus, {selectedDates, customParser});
     const {onDisableChange, ...disableController} = createDisableController($$bus, {disabledDates, customParser});
 
-    // month begin from monday or sunday
-
     const controller = {
         // @ts-ignore
         $$bus,
@@ -31,9 +29,9 @@ export const createController = (config?: ControllerConfig): Controller => {
         ...selectController,
         ...disableController,
         getState: () => excludeState(controller.getSelected(), controller.getDisabled()),
-        onFocusChange: (subscriber: (controller: Controller) => void) => $$bus.subscribe(() => subscriber(controller)),
-        onSelectChange: (subscriber: (controller: Controller) => void) => onSelectChange(() => subscriber(controller)),
-        onDisableChange: (subscriber: (controller: Controller) => void) => onDisableChange(() => subscriber(controller))
+        onFocusChange: (subscriber: EventSubscriber) => $$bus.subscribe(() => subscriber(controller)),
+        onSelectChange: (subscriber: EventSubscriber) => onSelectChange(() => subscriber(controller)),
+        onDisableChange: (subscriber: EventSubscriber) => onDisableChange(() => subscriber(controller))
     }
 
     return controller;
@@ -42,9 +40,9 @@ export const createController = (config?: ControllerConfig): Controller => {
 type ControllerType = FocusController & SelectController & DisableController & {
     getState: () => DateRange[];
     getConfig: () => ControllerConfig | undefined;
-    onFocusChange: (subscriber: (controller: Controller) => void) => () => void;
-    onSelectChange: (subscriber: (controller: Controller) => void) => () => void;
-    onDisableChange: (subscriber: (controller: Controller) => void) => () => void;
+    onFocusChange: (subscriber: EventSubscriber) => () => void;
+    onSelectChange: (subscriber: EventSubscriber) => () => void;
+    onDisableChange: (subscriber: EventSubscriber) => () => void;
 };
 
 export type Controller = {

@@ -18,7 +18,7 @@ export type InitState = {
     customParser?: CustomParser;
 }
 
-const bindAction = (store: IEventStore, customParser?: CustomParser) => {
+export const bindAction = (store: IEventStore, customParser?: CustomParser) => {
     return <T, S extends StoreAction<T>>(reducer: S): BasicControllerAction<S> => {
         return function () {
             const args = Array.from(arguments).map((arg) => {
@@ -52,3 +52,4 @@ export const createBaseController = (bus: IBus<ControllerCommand>, init: InitSta
         subscribe: eventStore.subscribe
     }
 }
+

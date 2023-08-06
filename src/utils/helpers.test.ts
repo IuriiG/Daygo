@@ -40,31 +40,31 @@ describe('Utils: helpers', () => {
         expect(calculatePrevMonthLength(toDate('2023-11-01'))).toBe(2);
         expect(calculatePrevMonthLength(toDate('2023-12-01'))).toBe(4);
 
-        expect(calculatePrevMonthLength(toDate('2023-01-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(6);
-        expect(calculatePrevMonthLength(toDate('2023-02-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(2);
-        expect(calculatePrevMonthLength(toDate('2023-03-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(2);
-        expect(calculatePrevMonthLength(toDate('2023-04-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(5);
-        expect(calculatePrevMonthLength(toDate('2023-05-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(7);
-        expect(calculatePrevMonthLength(toDate('2023-06-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(3);
-        expect(calculatePrevMonthLength(toDate('2023-07-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(5);
-        expect(calculatePrevMonthLength(toDate('2023-08-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(1);
-        expect(calculatePrevMonthLength(toDate('2023-09-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(4);
-        expect(calculatePrevMonthLength(toDate('2023-10-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(6);
-        expect(calculatePrevMonthLength(toDate('2023-11-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(2);
-        expect(calculatePrevMonthLength(toDate('2023-12-01'), {isFixed: true, weekStartsOn: 'monday'})).toBe(4);
+        expect(calculatePrevMonthLength(toDate('2023-01-01'), {isFixed: true, weekStartsOn: 1})).toBe(6);
+        expect(calculatePrevMonthLength(toDate('2023-02-01'), {isFixed: true, weekStartsOn: 1})).toBe(2);
+        expect(calculatePrevMonthLength(toDate('2023-03-01'), {isFixed: true, weekStartsOn: 1})).toBe(2);
+        expect(calculatePrevMonthLength(toDate('2023-04-01'), {isFixed: true, weekStartsOn: 1})).toBe(5);
+        expect(calculatePrevMonthLength(toDate('2023-05-01'), {isFixed: true, weekStartsOn: 1})).toBe(7);
+        expect(calculatePrevMonthLength(toDate('2023-06-01'), {isFixed: true, weekStartsOn: 1})).toBe(3);
+        expect(calculatePrevMonthLength(toDate('2023-07-01'), {isFixed: true, weekStartsOn: 1})).toBe(5);
+        expect(calculatePrevMonthLength(toDate('2023-08-01'), {isFixed: true, weekStartsOn: 1})).toBe(1);
+        expect(calculatePrevMonthLength(toDate('2023-09-01'), {isFixed: true, weekStartsOn: 1})).toBe(4);
+        expect(calculatePrevMonthLength(toDate('2023-10-01'), {isFixed: true, weekStartsOn: 1})).toBe(6);
+        expect(calculatePrevMonthLength(toDate('2023-11-01'), {isFixed: true, weekStartsOn: 1})).toBe(2);
+        expect(calculatePrevMonthLength(toDate('2023-12-01'), {isFixed: true, weekStartsOn: 1})).toBe(4);
 
-        expect(calculatePrevMonthLength(toDate('2023-01-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(7);
-        expect(calculatePrevMonthLength(toDate('2023-02-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(3);
-        expect(calculatePrevMonthLength(toDate('2023-03-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(3);
-        expect(calculatePrevMonthLength(toDate('2023-04-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(6);
-        expect(calculatePrevMonthLength(toDate('2023-05-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(7);
-        expect(calculatePrevMonthLength(toDate('2023-06-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(4);
-        expect(calculatePrevMonthLength(toDate('2023-07-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(6);
-        expect(calculatePrevMonthLength(toDate('2023-08-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(2);
-        expect(calculatePrevMonthLength(toDate('2023-09-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(5);
-        expect(calculatePrevMonthLength(toDate('2023-10-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(7);
-        expect(calculatePrevMonthLength(toDate('2023-11-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(3);
-        expect(calculatePrevMonthLength(toDate('2023-12-01'), {isFixed: true, weekStartsOn: 'sunday'})).toBe(5);
+        expect(calculatePrevMonthLength(toDate('2023-01-01'), {isFixed: true, weekStartsOn: 0})).toBe(7);
+        expect(calculatePrevMonthLength(toDate('2023-02-01'), {isFixed: true, weekStartsOn: 0})).toBe(3);
+        expect(calculatePrevMonthLength(toDate('2023-03-01'), {isFixed: true, weekStartsOn: 0})).toBe(3);
+        expect(calculatePrevMonthLength(toDate('2023-04-01'), {isFixed: true, weekStartsOn: 0})).toBe(6);
+        expect(calculatePrevMonthLength(toDate('2023-05-01'), {isFixed: true, weekStartsOn: 0})).toBe(7);
+        expect(calculatePrevMonthLength(toDate('2023-06-01'), {isFixed: true, weekStartsOn: 0})).toBe(4);
+        expect(calculatePrevMonthLength(toDate('2023-07-01'), {isFixed: true, weekStartsOn: 0})).toBe(6);
+        expect(calculatePrevMonthLength(toDate('2023-08-01'), {isFixed: true, weekStartsOn: 0})).toBe(2);
+        expect(calculatePrevMonthLength(toDate('2023-09-01'), {isFixed: true, weekStartsOn: 0})).toBe(5);
+        expect(calculatePrevMonthLength(toDate('2023-10-01'), {isFixed: true, weekStartsOn: 0})).toBe(7);
+        expect(calculatePrevMonthLength(toDate('2023-11-01'), {isFixed: true, weekStartsOn: 0})).toBe(3);
+        expect(calculatePrevMonthLength(toDate('2023-12-01'), {isFixed: true, weekStartsOn: 0})).toBe(5);
     });
 
     it('calcMonthLength', () => {
