@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { castDate, isDate, isFunction, isNumber, isString, pad, toCamelCase } from "./common";
+import { invoke, castDate, isDate, isFunction, isNumber, isString, pad, toCamelCase } from "./common";
 
 describe('Utils: common', () => {
     it ('isNumber', () => {
@@ -82,5 +82,12 @@ describe('Utils: common', () => {
         expect(customParser).toBeCalledWith('2023-01-15');
         expect(customParser).toHaveBeenCalledTimes(1);
         expect(customParser).toHaveReturnedWith(new Date('2023-01-15'));
+    });
+
+    it('invoke', () => {
+        const fn = vi.fn();
+        invoke(fn);
+
+        expect(fn).toHaveBeenCalledTimes(1);
     });
 }) 

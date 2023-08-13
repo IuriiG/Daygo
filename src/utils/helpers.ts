@@ -25,16 +25,57 @@ export function isWeekendCheck (dayNumber: number): boolean {
     return dayNumber === 6 || dayNumber === 0;
 }
 
-export function calculatePrevMonthLength(date: Date, opts?: { isFixed: boolean, weekStartsOn: WeekStarts }): number {
-    const { isFixed, weekStartsOn = 1 } = opts || {};
-    const firstDayNumber = dayNumber(setFirstDayOfMonth(date));
+/**
+0
 
-    return isFixed && firstDayNumber === 1 ? 7 : firstDayNumber - weekStartsOn;
+2 - 0 = 2
+
+0 1 2 3  4 5 6
+30 31 1 2 3  4 5
+6 7 8 9 10 11 12
+
+ */
+
+/**
+1
+
+2 - 1 = 1
+
+31 1 2 3  4 5 6
+7 8 9 10 11 12 13
+
+ */
+
+/**
+2
+
+2 - 2 = 0
+
+25 26 27 28 29 30 31
+1 2 3  4 5 6 7
+8 9 10 11 12 13 14
+
+ */
+/**
+3
+
+2 - 3 = -1
+
+26 27 28 29 30 31 1
+2 3  4 5 6 7 8
+9 10 11 12 13 14 15
+
+ */
+
+export function calculatePrevMonthLength(date: Date, weekStartsOn: WeekStarts): number {
+    const firstDayNumber = dayNumber(setFirstDayOfMonth(date)) - weekStartsOn;
+
+    return firstDayNumber <= 0 ? 7 + firstDayNumber : firstDayNumber;
 }
 
-export function calculateMonthLength (date: Date): number {
+export function calculateMonthLength (date: Date, weekStartsOn: WeekStarts): number {
     const currMonthLength = daysInMonth(date);
-    const prevMonthLength = calculatePrevMonthLength(date);
+    const prevMonthLength = calculatePrevMonthLength(date, weekStartsOn);
     
     const prevLength = prevMonthLength + currMonthLength;
     const nextLength = 7 - (prevLength % 7);
@@ -42,8 +83,9 @@ export function calculateMonthLength (date: Date): number {
     return prevLength + (nextLength === 7 ? 0 : nextLength);
 }
 
-export function getMonthLength(date: Date, isFixed: boolean): number {
-    return isFixed ? 42 : calculateMonthLength(date);
+export function getMonthLength(date: Date, params: {isFixed: boolean, weekStartsOn: WeekStarts}): number {
+    const { isFixed, weekStartsOn } = params;
+    return isFixed ? 42 : calculateMonthLength(date, weekStartsOn);
 }
 
 export function rangeOf(begin: Date | undefined, end: Date | undefined) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { IEventStore } from "../utils/event-store";
@@ -12,7 +13,11 @@ export type LastParam<T extends (...args: any) => any> = T extends (a: any, ...b
 
 export type Action<T extends (...args: any) => any> = ActionCreator<LastParam<T>>;
 
-export type Simplify<T extends (...args: any) => any> = T extends (...args: infer P) => infer R ? (...args: P) => R : never;
+export type SimplifyFn<T extends (...args: any) => any> = T extends (...args: infer P) => infer R ? (...args: P) => R : never;
+
+export type Simplify<T> = {
+    [K in keyof T]: T[K];
+} & {};
 
 export type _BasicControllerAction<T extends (...args: any) => any> = T extends (a: any, ...b: infer B) => infer R
     ? (...param: B) => R

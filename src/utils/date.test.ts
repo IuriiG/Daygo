@@ -169,7 +169,7 @@ describe('Utils: date', () => {
         expect(dayNumber(new Date('2023-01-19'))).toBe(4);
         expect(dayNumber(new Date('2023-01-20'))).toBe(5);
         expect(dayNumber(new Date('2023-01-21'))).toBe(6);
-        expect(dayNumber(new Date('2023-01-22'))).toBe(7);
+        expect(dayNumber(new Date('2023-01-22'))).toBe(0);
     });
 
     it('isSameMonth', () => {

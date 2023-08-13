@@ -1,4 +1,4 @@
-import { castDate, isDate, isString } from "./common";
+import { castDate, invoke, isDate, isString } from "./common";
 import { addDay, subtractDay } from "./date";
 import { isInRange, rangeOf } from "./helpers";
 import { Subscribe, createObservable } from "./observable";
@@ -62,6 +62,7 @@ export interface IEvent {
     type: EventTypes;
     value: EventValue;
     subscribe: Subscribe;
+    dispose(): void;
 }
 
 export type EventStoreInit = {
@@ -70,6 +71,7 @@ export type EventStoreInit = {
 }
 
 export function createEvent(type: EventTypes, data?: DateRange): IEvent {
+    const subscriptions = new Set<() => void>();
     const {subscribe, notify} = createObservable();
 
     const value = (updateData?: DateRange) => {
@@ -78,7 +80,18 @@ export function createEvent(type: EventTypes, data?: DateRange): IEvent {
         notify();
     };
 
-    return {type, value, subscribe} as IEvent
+    const _subscribe = (subscriber: () => void) => {
+        const subscription = subscribe(subscriber);
+        subscriptions.add(subscription);
+        return subscription;
+    };
+
+    const dispose = () => {
+        subscriptions.forEach(invoke);
+        subscriptions.clear();
+    };
+
+    return {type, value, dispose, subscribe: _subscribe} as IEvent;
 }
 
 export function initStateToEvents(init?: EventStoreInit): IEvent[] {
@@ -100,6 +113,7 @@ export function createEventStore(init: IEvent[]): IEventStore {
     let events: IEvent[] = init;
 
     const clear = () => {
+        events.forEach((event) => event.dispose());
         events = [];
         notify();
     };
@@ -112,6 +126,7 @@ export function createEventStore(init: IEvent[]): IEventStore {
     };
 
     const remove = (event: IEvent) => {
+        event.dispose();
         publish(createEvent(EventTypes.REMOVE, event.value()));
     };
 

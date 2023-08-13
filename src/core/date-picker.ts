@@ -9,19 +9,28 @@ import { FocusCommand, focusCommandHandlers } from "./controller-focus";
 import { ControllerCommand, FocusControllerCommand } from "../types/type";
 import { castDate } from "../utils/common";
 
-type DatePickerConfig = ControllerConfig & {
+export type DatePickerConfig = Readonly<ControllerConfig & {
     isFixed?: boolean;
     controller?: Controller;
     weekStartsOn?: WeekStarts;
     defaultMonth?: Date | string;
+}>
+
+export interface IDatePicker {
+    readonly month: IDay[];
+    readonly focusedDate: Date;
+    readonly subscribe: Subscribe;
+    readonly controller: Controller;
+    getSnapshot(): number;
+    replaceController(controller: Controller): void;
 }
 
-export const createDatePicker = (config?: DatePickerConfig) => {
+export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
     const {
         defaultMonth,
+        controller: external,
         isFixed = false,
         weekStartsOn = 1,
-        controller: external,
         ...controllerConfig
     } = config || {};
 
@@ -73,7 +82,7 @@ export const createDatePicker = (config?: DatePickerConfig) => {
             const previousDate = focusedDate;
             const { payload } = command as FocusControllerCommand;
     
-            focusedDate = handler(focusedDate, payload);
+            focusedDate = setFirstDayOfMonth(handler(focusedDate, payload));
     
             if (isSame(previousDate, focusedDate)) {
                 return;
@@ -104,8 +113,10 @@ export const createDatePicker = (config?: DatePickerConfig) => {
         subscribe,
         controller,
         getSnapshot,
-        focusedDate,
         replaceController,
+        get focusedDate() {
+            return focusedDate;
+        },
         get month() {
             if (!monthGrid.length) {
                 monthGrid = generateMonth(
@@ -124,20 +135,17 @@ export const createDatePicker = (config?: DatePickerConfig) => {
     return dp;
 }
 
-function generateMonth (
+export function generateMonth (
     date: Date,
     isFixed: boolean,
     weekStartsOn: WeekStarts,
     isSelected: (date: Date) => boolean,
     isDisabled: (date: Date) => boolean
 ): IDay[] {
-    const length = getMonthLength(date, isFixed);
+    const length = getMonthLength(date, {isFixed, weekStartsOn});
     const firstDayOfPrevMonth = subtractDay(
         setFirstDayOfMonth(date),
-        calculatePrevMonthLength(date, {
-            isFixed,
-            weekStartsOn
-        })
+        calculatePrevMonthLength(date, weekStartsOn)
     );
 
     return Array.from({length}, (_, i) => {

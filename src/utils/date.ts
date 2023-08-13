@@ -59,8 +59,7 @@ export function addDay(date: Date, offset = 1): Date {
 }
 
 export function dayNumber(date: Date): number {
-    const dayNum = date.getDay();
-    return dayNum ? dayNum : 7;
+    return date.getDay();
 }
 
 export function toDate(date: Date | string) {

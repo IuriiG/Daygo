@@ -15,7 +15,7 @@ export const createCommandBus = <T>(): IBus<T> => {
     const send = (command: T) => {
         queue.add(command);
         observable.notify();
-    }
+    };
 
     const subscribe = (subscriber: (command: T) => void) => {
         return observable.subscribe(() => {
@@ -24,7 +24,7 @@ export const createCommandBus = <T>(): IBus<T> => {
             });
             clearQueue();
         });
-    }
+    };
 
     return {send, subscribe};
-}
+};

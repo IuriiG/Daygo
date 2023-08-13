@@ -1,3 +1,4 @@
+import { invoke } from "./common";
 import {createEffect} from "./effect";
 
 export type Subscribe = (subscriber: () => void) => () => void;
@@ -11,7 +12,7 @@ export const createObservable = (): Observable => {
     const subscribers: Set<() => void> = new Set();
 
     const notify = createEffect(() => {
-        subscribers.forEach((subscriber) => subscriber());
+        subscribers.forEach(invoke);
     });
 
     const subscribe = (subscriber: () => void) => {

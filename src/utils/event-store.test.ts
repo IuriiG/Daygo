@@ -92,10 +92,16 @@ describe('Utils: event-store', () => {
 
         expect(subscriber).toHaveBeenCalledTimes(2);
         expect(nextSubscriber).toHaveBeenCalledTimes(1);
+        expect(event.value()).toEqual({from: date1, to: date4});
 
-        const value = event.value();
+        event.dispose();
+        event.value({from: date1, to: date5});
 
-        expect(value).toEqual({from: date1, to: date4});
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(2);
+        expect(nextSubscriber).toHaveBeenCalledTimes(1);
+        expect(event.value()).toEqual({from: date1, to: date5});
     });
 
     it('createEventStore: should return an event store', async () => {
@@ -165,7 +171,7 @@ describe('Utils: event-store', () => {
         await flushPromises();
 
         expect(subscriber).toHaveBeenCalledTimes(7);
-    })
+    });
 
     it('queryState: should return an event which matches the date range', () => {
         const events = initStateToEvents();
@@ -379,5 +385,5 @@ describe('Utils: event-store', () => {
         clear(store);
 
         expect(store.getState()).toEqual([]);
-    })
+    });
 });

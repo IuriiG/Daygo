@@ -23,6 +23,10 @@ export function pad(n: number): string {
     return n < 10 ? `0${n}` : `${n}`;
 }
 
+export function invoke(fn: () => void): void {
+    fn();
+}
+
 export const toCamelCase = <T extends string>(s: T): ToCamelCase<T> => s
     .toLowerCase()
     .replace(/([_][a-z])/g, (group) =>

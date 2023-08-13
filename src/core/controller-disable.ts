@@ -17,8 +17,8 @@ export const createDisableController = (bus: IBus<ControllerCommand>, init: Disa
 
     return {
         isDisabled: basicController.is,
-        enableDate: basicController.add,
-        disableDate: basicController.remove,
+        enableDate: basicController.remove,
+        disableDate: basicController.add,
         resetDisabled: basicController.reset,
         getDisabled: basicController.getState,
         disableDateToggle: basicController.toggle,

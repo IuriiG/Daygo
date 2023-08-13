@@ -13,8 +13,52 @@ const m = {
     }
 }
 
+/**
+0
+
+2 - 0 = 2
+
+0 1 2 3  4 5 6
+30 31 1 2 3  4 5
+6 7 8 9 10 11 12
+
+ */
+
+/**
+1
+
+2 - 1 = 1
+
+31 1 2 3  4 5 6
+7 8 9 10 11 12 13
+
+ */
+
+/**
+2
+
+2 - 2 = 0
+
+25 26 27 28 29 30 31
+1 2 3  4 5 6 7
+8 9 10 11 12 13 14
+
+ */
+/**
+3
+
+2 - 3 = -1
+
+26 27 28 29 30 31 1
+2 3  4 5 6 7 8
+9 10 11 12 13 14 15
+
+ */
+
+
+
 function App() {
-    const dp = useConst(() => createDatePicker({isFixed: true, weekStartsOn: 'sunday'}));
+    const dp = useConst(() => createDatePicker({isFixed: false, weekStartsOn: 1 }));
     const [isSelect, setIsSelect] = useState(true);
     const toggle = () => setIsSelect(prev => !prev)
     const c = dp.controller;
@@ -112,9 +156,10 @@ function App() {
                 })
             }
         </div>
+        <div>{dp.focusedDate.toDateString()}</div>
         <div>
             <button type='button' onClick={() => dp.controller.focusPrevMonth()}>PREV MONTH</button>
-            <button type='button' onClick={() => dp.controller.focusNextMonth(2)}>NEXT MONTH</button>
+            <button type='button' onClick={() => dp.controller.focusNextMonth()}>NEXT MONTH</button>
             <button type='button' onClick={toggle}>TOGGLE IS SELECT</button>
             <button type='button' onClick={() => {
                 console.log(dp.controller.getSelected())
