@@ -236,7 +236,6 @@ describe('Core: date-picker', () => {
         await flushPromises();
 
         expect(datePicker.getSnapshot()).toBe(1);
-        expect(subscriber).toHaveBeenCalledTimes(1);
 
         const monthGrid1 = datePicker.month;
 
@@ -267,10 +266,46 @@ describe('Core: date-picker', () => {
         expect(datePicker.focusedDate).toEqual(fixedStates[3].date);
 
         expect(subscriber).toHaveBeenCalledTimes(2);
-
-        // update subscription, avoid re-call subscriber on each focus update
-        expect(focusSubscriber).toHaveBeenCalledTimes(3);
+        expect(focusSubscriber).toHaveBeenCalledTimes(2);
         expect(selectSubscriber).toHaveBeenCalledTimes(0);
         expect(disableSubscriber).toHaveBeenCalledTimes(0);
+
+        datePicker.controller.selectDateMultiple(fixedStates[3].date);
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(3);
+        expect(focusSubscriber).toHaveBeenCalledTimes(2);
+        expect(selectSubscriber).toHaveBeenCalledTimes(1);
+        expect(disableSubscriber).toHaveBeenCalledTimes(0);
+
+        datePicker.controller.selectDateMultiple(fixedStates[4].date);
+        datePicker.controller.selectDateMultiple(fixedStates[5].date);
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(focusSubscriber).toHaveBeenCalledTimes(2);
+        expect(selectSubscriber).toHaveBeenCalledTimes(2);
+        expect(disableSubscriber).toHaveBeenCalledTimes(0);
+
+        datePicker.controller.disableDate(fixedStates[6].date);
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(5);
+        expect(focusSubscriber).toHaveBeenCalledTimes(2);
+        expect(selectSubscriber).toHaveBeenCalledTimes(2);
+        expect(disableSubscriber).toHaveBeenCalledTimes(1);
+
+        datePicker.controller.disableDate(fixedStates[7].date);
+        datePicker.controller.disableDate(fixedStates[8].date);
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(6);
+        expect(focusSubscriber).toHaveBeenCalledTimes(2);
+        expect(selectSubscriber).toHaveBeenCalledTimes(2);
+        expect(disableSubscriber).toHaveBeenCalledTimes(2);
     });
 });

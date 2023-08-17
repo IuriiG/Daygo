@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { IBus, createCommandBus } from "../utils/command-bus";
 import { SelectController, createSelectController } from "./controller-select";
-import { FocusController, createFocusController } from "./controller-focus";
+import { FocusCommand, FocusController, createFocusController, focusCommandHandlers } from "./controller-focus";
 import { ControllerCommand, CustomParser, EventSubscriber } from "../types/type";
 import { DisableController, createDisableController } from "./controller-disable";
 import { DateRange, excludeState } from "../utils/event-store";
-import { SharedCommand } from "./controller-base";
+import { createEffect } from "../utils/effect";
 
 export type ControllerConfig = {
     selectedDates?: Array<Date | DateRange | string>;
@@ -46,7 +46,10 @@ export const createController = (config?: ControllerConfig): Controller => {
         ...selectController,
         ...disableController,
         getState: () => excludeState(controller.getSelected(), controller.getDisabled()),
-        onFocusChange: (subscriber: EventSubscriber) => $$bus.subscribe(({type}) => type !== SharedCommand.UPDATE && subscriber(controller)),
+        onFocusChange: (subscriber: EventSubscriber) => {
+            const subscribeEffect = createEffect(() => subscriber(controller));
+            return $$bus.subscribe(({type}) => focusCommandHandlers[type as FocusCommand] && subscribeEffect());
+        },
         onSelectChange: (subscriber: EventSubscriber) => onSelectChange(() => subscriber(controller)),
         onDisableChange: (subscriber: EventSubscriber) => onDisableChange(() => subscriber(controller))
     }

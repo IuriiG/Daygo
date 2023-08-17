@@ -132,18 +132,18 @@ function App() {
                     return (
                         <div key={day.iso}
                             // onClick={() => dp.controller.toggleSelectDate(day.date)}
-                            // onClick={() => dp.controller.selectDateMultiple(day.date)}
+                            onClick={() => dp.controller.selectDateMultiple(day.date)}
                             // onClick={() => dp.controller.selectDate(day.date)}
                             // onClick={() => dp.controller.startStopSelectRange(day.date)}
-                            onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
-                            onClick={() => {
-                                if (isSelect) {
-                                    dp.controller.startStopRangeAuto(day.date)
-                                    return
-                                }
+                            // onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
+                            // onClick={() => {
+                            //     if (isSelect) {
+                            //         dp.controller.startStopRangeAuto(day.date)
+                            //         return
+                            //     }
 
-                                dp.controller.toggleSelectDate(day.date);
-                            }}
+                            //     dp.controller.toggleSelectDate(day.date);
+                            // }}
                         style={{
                             background,
                             height: '20px',
@@ -164,6 +164,12 @@ function App() {
             <button type='button' onClick={() => {
                 console.log(dp.controller.getSelected())
             }}>GET SELECTED</button>
+            <button type='button' onClick={() => {
+                dp.controller.selectDateMultiple(new Date('2023-08-16'))
+                dp.controller.selectDateMultiple(new Date('2023-08-18'))
+                dp.controller.selectDateMultiple(new Date('2023-08-20'))
+                dp.controller.selectDateMultiple(new Date('2023-08-22'))
+            }}>NEXT MONTH</button>
         </div>
         </>
     )

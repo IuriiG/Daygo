@@ -112,6 +112,10 @@ export function createEventStore(init: IEvent[]): IEventStore {
     const {notify, subscribe} = createObservable();
     let events: IEvent[] = init;
 
+    subscribe(() => {
+        console.log(events);
+    })
+
     const clear = () => {
         events.forEach((event) => event.dispose());
         events = [];
