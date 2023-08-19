@@ -131,8 +131,8 @@ function App() {
                     // console.log(day.iso, day.date.toISOString(), day.date)
                     return (
                         <div key={day.iso}
-                            // onClick={() => dp.controller.toggleSelectDate(day.date)}
-                            onClick={() => dp.controller.selectDateMultiple(day.date)}
+                            onClick={() => dp.controller.toggleSelectDate(day.date)}
+                            // onClick={() => dp.controller.selectDateMultiple(day.date)}
                             // onClick={() => dp.controller.selectDate(day.date)}
                             // onClick={() => dp.controller.startStopSelectRange(day.date)}
                             // onMouseMove={() => dp.controller.updateRangeAuto(day.date)}

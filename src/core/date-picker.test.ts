@@ -256,6 +256,8 @@ describe('Core: date-picker', () => {
 
         await flushPromises();
 
+        expect(datePicker.getSnapshot()).toBe(2);
+
         const monthGrid2 = datePicker.month;
 
         const firstDay2 = monthGrid2[0];
@@ -274,6 +276,8 @@ describe('Core: date-picker', () => {
 
         await flushPromises();
 
+        expect(datePicker.getSnapshot()).toBe(3);
+
         expect(subscriber).toHaveBeenCalledTimes(3);
         expect(focusSubscriber).toHaveBeenCalledTimes(2);
         expect(selectSubscriber).toHaveBeenCalledTimes(1);
@@ -284,7 +288,9 @@ describe('Core: date-picker', () => {
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(datePicker.getSnapshot()).toBe(3);
+
+        expect(subscriber).toHaveBeenCalledTimes(3);
         expect(focusSubscriber).toHaveBeenCalledTimes(2);
         expect(selectSubscriber).toHaveBeenCalledTimes(2);
         expect(disableSubscriber).toHaveBeenCalledTimes(0);
@@ -293,7 +299,9 @@ describe('Core: date-picker', () => {
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(5);
+        expect(datePicker.getSnapshot()).toBe(3);
+
+        expect(subscriber).toHaveBeenCalledTimes(3);
         expect(focusSubscriber).toHaveBeenCalledTimes(2);
         expect(selectSubscriber).toHaveBeenCalledTimes(2);
         expect(disableSubscriber).toHaveBeenCalledTimes(1);
@@ -303,7 +311,9 @@ describe('Core: date-picker', () => {
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(6);
+        expect(datePicker.getSnapshot()).toBe(3);
+
+        expect(subscriber).toHaveBeenCalledTimes(3);
         expect(focusSubscriber).toHaveBeenCalledTimes(2);
         expect(selectSubscriber).toHaveBeenCalledTimes(2);
         expect(disableSubscriber).toHaveBeenCalledTimes(2);
