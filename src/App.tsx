@@ -2,6 +2,7 @@ import { useState, useSyncExternalStore } from "react";
 import { createDatePicker } from "./core/date-picker"
 import { useConst } from "./hooks/useConst"
 import { Controller } from "./core/controller";
+import { mergeRanges } from "./tools";
 
 let count = 0;
 let grid: any;
@@ -131,11 +132,11 @@ function App() {
                     // console.log(day.iso, day.date.toISOString(), day.date)
                     return (
                         <div key={day.iso}
-                            onClick={() => dp.controller.toggleSelectDate(day.date)}
-                            // onClick={() => dp.controller.selectDateMultiple(day.date)}
+                            // onClick={() => dp.controller.toggleSelectDate(day.date)}
+                            // onClick={() => dp.controller.toggleSelectDate(day.date)}
                             // onClick={() => dp.controller.selectDate(day.date)}
-                            // onClick={() => dp.controller.startStopSelectRange(day.date)}
-                            // onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
+                            onClick={() => dp.controller.startStopRangeAuto(day.date)}
+                            onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
                             // onClick={() => {
                             //     if (isSelect) {
                             //         dp.controller.startStopRangeAuto(day.date)
@@ -162,14 +163,20 @@ function App() {
             <button type='button' onClick={() => dp.controller.focusNextMonth()}>NEXT MONTH</button>
             <button type='button' onClick={toggle}>TOGGLE IS SELECT</button>
             <button type='button' onClick={() => {
-                console.log(dp.controller.getSelected())
+                console.log(mergeRanges(dp.controller.getSelected()))
             }}>GET SELECTED</button>
             <button type='button' onClick={() => {
-                dp.controller.selectDateMultiple(new Date('2023-08-16'))
-                dp.controller.selectDateMultiple(new Date('2023-08-18'))
-                dp.controller.selectDateMultiple(new Date('2023-08-20'))
-                dp.controller.selectDateMultiple(new Date('2023-08-22'))
-            }}>NEXT MONTH</button>
+                dp.controller.selectDateMultiple({
+                    from: new Date('2023-08-10'),
+                    to: new Date('2023-08-15')
+                })
+            }}>SELECT MULTIPLE</button>
+            <button type='button' onClick={() => {
+                dp.controller.unselectDate({
+                    from: new Date('2023-08-10'),
+                    to: new Date('2023-08-15')
+                })
+            }}>UNSELECT MULTIPLE</button>
         </div>
         </>
     )

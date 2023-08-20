@@ -1,47 +1,37 @@
-import { castDate, invoke, isDate, isString } from "./common";
+import { castDate, isDate, isString } from "./common";
 import { addDay, subtractDay } from "./date";
 import { isInRange, rangeOf } from "./helpers";
 import { Subscribe, createObservable } from "./observable";
-
-export enum EventTypes {
-    ADD = 'ADD',
-    REMOVE = 'REMOVE'
-}
 
 export type DateRange = {
     from?: Date;
     to?: Date;
 };
 
-export interface IEventStore {
+export interface IStore {
     clear(): void;
-    getState(): DateRange[];
-    query(date: Date): DateRange | null;
-    remove(event: IEvent): void;
-    publish(event: IEvent): void;
     subscribe: Subscribe;
+    getState(): DateRange[];
+    query(date: Date): boolean;
+    remove(range: DateRange): void;
+    publish(range: DateRange): void;
 }
 
-export function is(store: IEventStore, date: Date): boolean {
+export function is(store: IStore, date: Date): boolean {
     return Boolean(store.query(date));
 }
 
-export function add(store: IEventStore, from: Date, to?: Date): void {
-    const event = createEvent(EventTypes.ADD, {from, to: to || from});
-    store.publish(event);
+export function add(store: IStore, date: Date | DateRange): void {
+    const range = isDate(date) ? {from: date, to: date} : date;
+    store.publish(range);
 }
 
-export function replace(store: IEventStore, from: Date, to?: Date): void {
-    clear(store);
-    add(store, from, to);
+export function remove(store: IStore, date: Date | DateRange): void {
+    const range = isDate(date) ? {from: date, to: date} : date;
+    store.remove(range);
 }
 
-export function remove(store: IEventStore, from: Date, to?: Date): void {
-    const event = createEvent(EventTypes.REMOVE, {from, to: to || from});
-    store.publish(event);
-}
-
-export function dateToggle(store: IEventStore, date: Date): void {
+export function dateToggle(store: IStore, date: Date): void {
     if (is(store, date)) {
         remove(store, date);
         return
@@ -50,19 +40,13 @@ export function dateToggle(store: IEventStore, date: Date): void {
     add(store, date);
 }
 
-export function clear(store: IEventStore) {
+export function clear(store: IStore) {
     store.clear();
 }
 
-export type EventValueGet = () => DateRange;
-export type EventValueSet = (v: DateRange) => void;
-export type EventValue = EventValueGet & EventValueSet;
-
-export interface IEvent {
-    type: EventTypes;
-    value: EventValue;
-    subscribe: Subscribe;
-    dispose(): void;
+export function replace(store: IStore, range: Date | DateRange): void {
+    clear(store);
+    add(store, range);
 }
 
 export type EventStoreInit = {
@@ -70,115 +54,57 @@ export type EventStoreInit = {
     customParser?: (date: string) => Date;
 }
 
-export function createEvent(type: EventTypes, data?: DateRange): IEvent {
-    const subscriptions = new Set<() => void>();
-    const {subscribe, notify} = createObservable();
-
-    const value = (updateData?: DateRange) => {
-        if (!updateData) return data;
-        data = updateData;
-        notify();
-    };
-
-    const _subscribe = (subscriber: () => void) => {
-        const subscription = subscribe(subscriber);
-        subscriptions.add(subscription);
-        return subscription;
-    };
-
-    const dispose = () => {
-        subscriptions.forEach(invoke);
-        subscriptions.clear();
-    };
-
-    return {type, value, dispose, subscribe: _subscribe} as IEvent;
-}
-
-export function initStateToEvents(init?: EventStoreInit): IEvent[] {
+export function initStateToRanges(init?: EventStoreInit): DateRange[] {
     const {initState, customParser} = init || {};
 
     if (!Array.isArray(initState)) return []
     return initState.map((item) => {
         if (isString(item) || isDate(item)) {
             const date = castDate(item, customParser);
-            return createEvent(EventTypes.ADD, {from: date, to: date});
+            return {from: date, to: date};
         }
 
-        return createEvent(EventTypes.ADD, item);
+        return item;
     });
 }
 
-export function createEventStore(init: IEvent[]): IEventStore {
+export function createStore(init: DateRange[]): IStore {
     const {notify, subscribe} = createObservable();
-    let events: IEvent[] = init;
+    let state: DateRange[] = init;
 
-    subscribe(() => {
-        console.log(events);
-    })
+    const publish = (dateRange: DateRange) => {
+        state = push(state, dateRange);
+        notify();
+    };
+
+    const remove = (dateRange: DateRange) => {
+        state = pop(state, dateRange);
+        notify();
+    };
 
     const clear = () => {
-        events.forEach((event) => event.dispose());
-        events = [];
+        state = [];
         notify();
     };
 
-    const publish = (event: IEvent) => {
-        if (events.includes(event)) return;
-        event.subscribe(notify);
-        events.push(event);
-        notify();
-    };
+    const query = (date: Date) => includes(state, date);
 
-    const remove = (event: IEvent) => {
-        event.dispose();
-        publish(createEvent(EventTypes.REMOVE, event.value()));
-    };
+    const getState = () => sort(state);
 
-    const query = (date: Date) => queryState(events, date);
-
-    const getState = () => flatState(events);
-
-    return {clear, remove, query, publish, subscribe, getState}
+    return {publish, query, remove, clear, getState, subscribe};
 }
 
-export function queryState(events: IEvent[], date: Date) {
-    for (let i = events.length - 1; i >= 0; i--) {
-        const event = events[i];
-        const value = event.value();
-
-        if (value && isInRange(date, value)) {
-            return event.type === EventTypes.ADD ? value : null;
-        }
-    }
-
-    return null;
-}
-
-export function flatState(events: IEvent[]): DateRange[] {
-    return events.reduce((acc, event) => {
-        const value = event.value();
-
-        if (!value) return acc;
-
-        if (event.type === EventTypes.ADD) {
-            return mergeAddEvent(acc, value);
-        }
-
-        return mergeRemoveEvent(acc, value);
-    }, [] as DateRange[]);
-}
-
-export function mergeAddEvent(events: DateRange[], event: DateRange): DateRange[] {
-    const [start, end] = getRange(event);
-    const mergedEvents: DateRange[] = [];
+export function push(ranges: DateRange[], range: DateRange): DateRange[] {
+    const [start, end] = getRange(range);
+    const mergedRanges: DateRange[] = [];
     let newStart = start;
     let newEnd = end;
 
-    for (const eachEvent of events) {
-        const [from, to] = getRange(eachEvent);
+    for (const eachRange of ranges) {
+        const [from, to] = getRange(eachRange);
 
         if (start > to || end < from) {
-            mergedEvents.push(eachEvent);
+            mergedRanges.push(eachRange);
             continue;
         }
 
@@ -186,15 +112,15 @@ export function mergeAddEvent(events: DateRange[], event: DateRange): DateRange[
         newEnd = Math.max(newEnd, to);
     }
 
-    mergedEvents.push({
+    mergedRanges.push({
         from: numberToDate(newStart),
         to: numberToDate(newEnd)
     });
 
-    return mergedEvents;
+    return mergedRanges;
 }
 
-export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRange[] {
+export function pop(events: DateRange[], event: DateRange): DateRange[] {
     const [start, end] = getRange(event);
     const res: DateRange[] = [];
 
@@ -229,7 +155,24 @@ export function mergeRemoveEvent(events: DateRange[], event: DateRange): DateRan
 }
 
 export function excludeState (targetState: DateRange[], exclude: DateRange[]) {
-    return exclude.reduce(mergeRemoveEvent, targetState);
+    return exclude.reduce(pop, targetState);
+}
+
+export function sort (state: DateRange[]) {
+    return state.sort((a, b) => {
+        const [fromA, toA] = getRange(a);
+        const [fromB, toB] = getRange(b);
+
+        if (fromA > fromB) return 1;
+        if (fromA < fromB) return -1;
+        if (toA > toB) return 1;
+        if (toA < toB) return -1;   
+        return 0;
+    });
+}
+
+export function includes (state: DateRange[], date: Date) {
+    return state.some((item) => isInRange(date, item));
 }
 
 export function getRange(eventRange: DateRange) {

@@ -1,33 +1,29 @@
 import { isSame } from "./date";
-import { IEventStore, EventTypes, createEvent } from "./event-store";
-
-export const createEmptyRange = () => createEvent(EventTypes.ADD);
+import { IStore, DateRange } from "./event-store";
 
 export const createRangeSelector = () => {
     let isActive = false;
-    let rangeEvent = createEmptyRange();
+    let rangeEvent: DateRange | null = null;
 
-    const updateSelector = (_: IEventStore, date: Date) => {
-        if (!isActive) return;
+    const updateSelector = (store: IStore, date: Date) => {
+        if (!isActive || !rangeEvent) return;
 
-        const {from = null, to = null}  = rangeEvent.value();
+        const {from = null, to = null}  = rangeEvent;
 
         if (isSame(to, date)) return
-        rangeEvent.value({from: from || date, to: date});
+
+        store.remove(rangeEvent);
+        rangeEvent = {from: from || date, to: date};
+        store.publish(rangeEvent);
     };
 
-    const activateSelector = (store: IEventStore, date: Date) => {
+    const activateSelector = (store: IStore, date: Date) => {
         isActive = !isActive;
+        if (!isActive) return;
 
-        if (isActive) {
-            store.remove(rangeEvent);
-            rangeEvent = createEmptyRange();
-
-            store.publish(rangeEvent);
-            rangeEvent.value({from: date, to: date})
-        }
-
-        updateSelector(store, date);
+        rangeEvent && store.remove(rangeEvent);
+        rangeEvent = { from: date, to: date }
+        store.publish(rangeEvent);
     };
 
     return {

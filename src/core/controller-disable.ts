@@ -22,8 +22,6 @@ export const createDisableController = (bus: IBus<ControllerCommand>, init: Disa
         resetDisabled: basicController.reset,
         getDisabled: basicController.getState,
         disableDateToggle: basicController.toggle,
-        removeDisableEvent: basicController.removeEvent,
-        publishDisableEvent: basicController.publishEvent,
         onDisableChange: basicController.subscribe
     }
 }
