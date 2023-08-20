@@ -1,5 +1,5 @@
 import { isSame } from "../utils/date";
-import { DateRange, push } from "../utils/event-store";
+import { DateRange } from "../utils/event-store";
 
 export const rangeToDate = (range: DateRange) => {
     const {from = null, to = null} = range;
@@ -13,7 +13,3 @@ export const toRange = (date: Date) => {
         to: date
     };
 };
-
-export const mergeRanges = (ranges: DateRange[]) => {
-    return ranges.reduce(push, [] as DateRange[]);
-}

@@ -1,3 +1,4 @@
+import { toRange } from "../tools";
 import { castDate, isDate, isString } from "./common";
 import { addDay, subtractDay } from "./date";
 import { isInRange, rangeOf } from "./helpers";
@@ -22,12 +23,12 @@ export function is(store: IStore, date: Date): boolean {
 }
 
 export function add(store: IStore, date: Date | DateRange): void {
-    const range = isDate(date) ? {from: date, to: date} : date;
+    const range = isDate(date) ? toRange(date) : date;
     store.publish(range);
 }
 
 export function remove(store: IStore, date: Date | DateRange): void {
-    const range = isDate(date) ? {from: date, to: date} : date;
+    const range = isDate(date) ? toRange(date) : date;
     store.remove(range);
 }
 
@@ -61,7 +62,7 @@ export function initStateToRanges(init?: EventStoreInit): DateRange[] {
     return initState.map((item) => {
         if (isString(item) || isDate(item)) {
             const date = castDate(item, customParser);
-            return {from: date, to: date};
+            return toRange(date);
         }
 
         return item;
