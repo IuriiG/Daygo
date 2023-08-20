@@ -1,4 +1,4 @@
-import { toDate } from "../utils/date";
+import { setFirstDayOfMonth, toDate, today } from "../utils/date";
 import { WeekStarts } from "../utils/helpers";
 import { flushPromises } from "../utils/test-utils";
 import { createController } from "./controller";
@@ -317,5 +317,132 @@ describe('Core: date-picker', () => {
         expect(focusSubscriber).toHaveBeenCalledTimes(2);
         expect(selectSubscriber).toHaveBeenCalledTimes(2);
         expect(disableSubscriber).toHaveBeenCalledTimes(2);
+
+        datePicker.controller.focusToday();
+
+        await flushPromises();
+
+        expect(datePicker.getSnapshot()).toBe(4);
+
+        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(focusSubscriber).toHaveBeenCalledTimes(3);
+        expect(selectSubscriber).toHaveBeenCalledTimes(2);
+        expect(disableSubscriber).toHaveBeenCalledTimes(2);
+
+        await flushPromises();
+
+        datePicker.controller.focusToday();
+
+        expect(datePicker.getSnapshot()).toBe(4);
+
+        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(focusSubscriber).toHaveBeenCalledTimes(3);
+        expect(selectSubscriber).toHaveBeenCalledTimes(2);
+        expect(disableSubscriber).toHaveBeenCalledTimes(2);
+    });
+
+    it('datePicker: subscribe', async () => {
+        const controller = createController();
+        const datePicker = createDatePicker({
+            defaultMonth: '2023-01-01',
+            weekStartsOn: 0,
+            isFixed: true,
+            controller
+        });
+
+        const subscriber = vi.fn();
+
+        const dispose = datePicker.subscribe(subscriber);
+
+        expect(subscriber).toHaveBeenCalledTimes(0);
+        expect(dispose).toBeDefined();
+
+        controller.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(1);
+
+        controller.focusNextMonth();
+        controller.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(2);
+
+        dispose();
+
+        controller.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(2);
+    });
+
+    it ('datePicker: replaceController', async () => {
+        const externalController = createController();
+        const datePicker = createDatePicker({
+            defaultMonth: '2023-01-01',
+            weekStartsOn: 0,
+            isFixed: true
+        });
+
+        const subscriber = vi.fn();
+
+        const dispose = datePicker.subscribe(subscriber);
+
+        expect(subscriber).toHaveBeenCalledTimes(0);
+        expect(dispose).toBeDefined();
+
+        datePicker.controller.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(1);
+
+        externalController.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(1);
+
+        const prevController = datePicker.controller;
+
+        datePicker.replaceController(externalController);
+        prevController.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(2);
+
+        expect(datePicker.controller === externalController).toBe(true);
+
+        externalController.focusNextMonth();
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(3);
+    });
+
+    it ('datePicker: defaultMonth', async () => {
+        const datePicker1 = createDatePicker({
+            defaultMonth: '2023-01-01',
+        });
+
+        expect(datePicker1.focusedDate).toEqual(setFirstDayOfMonth(toDate('2023-01-01')));
+
+        const datePicker2 = createDatePicker();
+
+        expect(datePicker2.focusedDate).toEqual(setFirstDayOfMonth(today()));
+    });
+
+    it ('datePicker: customParser', async () => {
+        const customParser = vi.fn((date: string) => new Date(date));
+        const controller = createController({customParser});
+        const datePicker = createDatePicker({
+            controller
+        });
+
+        expect(datePicker.controller.getConfig()?.customParser).toBe(customParser);
     });
 });

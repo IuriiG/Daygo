@@ -71,6 +71,8 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
 
     const replaceController = (next: Controller) => {
         update();
+        connectionDispose();
+
         controller = next;
         connectionDispose = connect();
     };
@@ -111,9 +113,11 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
 
     const dp = {
         subscribe,
-        controller,
         getSnapshot,
         replaceController,
+        get controller() {
+            return controller;
+        },
         get focusedDate() {
             return focusedDate;
         },

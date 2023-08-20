@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IEventStore } from "../utils/event-store";
+import { IStore } from "../utils/event-store";
 
 export type ToCamelCase<T extends string> = T extends `${infer A}_${infer B}${infer C}`
     ? `${Lowercase<A>}${Uppercase<B>}${ToCamelCase<C>}`
@@ -25,10 +25,8 @@ export type _BasicControllerAction<T extends (...args: any) => any> = T extends 
 
 export type IsUnknown<T> = unknown extends T ? true : false;
 
-export type BasicControllerAction<T extends (...args: any) => any> = T extends (store: IEventStore, arg1: infer A, arg2: infer B) => infer R
-    ? IsUnknown<B> extends false
-        ? (from: A | string, to?: NonNullable<B> | string) => R
-        : IsUnknown<A> extends false
-            ? (date: A | string) => R
-            : () => R
+export type BasicControllerAction<T extends (...args: any) => any> = T extends (store: IStore, date: infer A) => infer R
+    ? IsUnknown<A> extends false
+        ? (date: A | string) => R
+        : () => R
     : never;

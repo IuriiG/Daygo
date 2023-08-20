@@ -26,8 +26,6 @@ export const createSelectController = (bus: IBus<ControllerCommand>, init: Selec
         getSelected: basicController.getState,
         toggleSelectDate: basicController.toggle,
         selectDateMultiple: basicController.add,
-        removeSelectEvent: basicController.removeEvent,
-        publishSelectEvent: basicController.publishEvent,
         onSelectChange: basicController.subscribe,
         startStopRangeAuto: bind(activateSelector),
         updateRangeAuto: bind(updateSelector)

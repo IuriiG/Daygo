@@ -41,10 +41,6 @@ describe('Core: controller', () => {
         expect(controller.onDisableChange).toBeDefined();
         expect(controller.onFocusChange).toBeDefined();
         expect(controller.onSelectChange).toBeDefined();
-        expect(controller.publishDisableEvent).toBeDefined();
-        expect(controller.publishSelectEvent).toBeDefined();
-        expect(controller.removeDisableEvent).toBeDefined();
-        expect(controller.removeSelectEvent).toBeDefined();
         expect(controller.resetDisabled).toBeDefined();
         expect(controller.resetSelected).toBeDefined();
         expect(controller.selectDate).toBeDefined();
@@ -96,13 +92,13 @@ describe('Core: controller', () => {
         expect(disableSubscriber).toHaveBeenCalledWith(controller);
 
         expect(controller.getSelected()).toEqual([
-            { from: toDate('2023-01-02'), to: toDate('2023-01-02') },
-            { from: toDate('2023-01-01'), to: toDate('2023-01-01') }
+            { from: toDate('2023-01-01'), to: toDate('2023-01-01') },
+            { from: toDate('2023-01-02'), to: toDate('2023-01-02') }
         ]);
 
         expect(controller.getDisabled()).toEqual([
-            { from: toDate('2023-01-03'), to: toDate('2023-01-03') },
-            { from: toDate('2023-01-01'), to: toDate('2023-01-01') }
+            { from: toDate('2023-01-01'), to: toDate('2023-01-01') },
+            { from: toDate('2023-01-03'), to: toDate('2023-01-03') }
         ]);
 
         expect(controller.getState()).toEqual([

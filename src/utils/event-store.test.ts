@@ -2,21 +2,19 @@ import { toDate } from './date';
 import {
     is,
     add,
-    remove,
-    dateToggle,
-    replace,
+    pop,
+    push,
+    sort,
     clear,
-    initStateToEvents,
-    createEvent,
-    EventTypes,
-    createEventStore,
-    queryState,
-    mergeAddEvent,
-    mergeRemoveEvent,
-    excludeState,
+    remove,
+    replace,
+    includes,
     getRange,
-    IEvent,
-    flatState
+    DateRange,
+    dateToggle,
+    createStore,
+    excludeState,
+    initStateToRanges
 } from './event-store';
 import { flushPromises } from './test-utils';
 
@@ -32,33 +30,33 @@ describe('Utils: event-store', () => {
         const stringDate1 = '2023-01-05';
         const stringDate2 = '2023-01-06';
 
-        const dateEvent1 = createEvent(EventTypes.ADD, {from: date1, to: date1});
+        const dateEvent1: DateRange = {from: date1, to: date1};
 
-        expect(initStateToEvents()).toEqual([]);
-        expect(initStateToEvents({})).toEqual([]);
-        expect(initStateToEvents({initState: []})).toEqual([]);
+        expect(initStateToRanges()).toEqual([]);
+        expect(initStateToRanges({})).toEqual([]);
+        expect(initStateToRanges({initState: []})).toEqual([]);
 
-        const [event] = initStateToEvents({initState: [{from: date1, to: date1}]});
+        const [range] = initStateToRanges({initState: [{from: date1, to: date1}]});
 
-        expect(event.value()).toEqual(dateEvent1.value());
+        expect(range).toEqual(dateEvent1);
 
-        const [dateEvent] = initStateToEvents({initState: [date1]});
+        const [dateRange] = initStateToRanges({initState: [date1]});
 
-        expect(dateEvent.value()).toEqual(dateEvent1.value());
+        expect(dateRange).toEqual(dateEvent1);
 
-        const [event1, event2] = initStateToEvents({initState: [date1, date2]});
+        const [range1, range2] = initStateToRanges({initState: [date1, date2]});
 
-        expect(event1.value()).toEqual({from: toDate(date1), to: toDate(date1)});
-        expect(event2.value()).toEqual({from: toDate(date2), to: toDate(date2)});
+        expect(range1).toEqual({from: toDate(date1), to: toDate(date1)});
+        expect(range2).toEqual({from: toDate(date2), to: toDate(date2)});
 
         const customParser = vi.fn((date: string) => toDate(date));
 
-        expect(initStateToEvents({customParser})).toEqual([]);
+        expect(initStateToRanges({customParser})).toEqual([]);
 
-        const [event3, event4] = initStateToEvents({initState: [stringDate1, stringDate2], customParser});
+        const [range3, range4] = initStateToRanges({initState: [stringDate1, stringDate2], customParser});
 
-        expect(event3.value()).toEqual({from: toDate(stringDate1), to: toDate(stringDate1)});
-        expect(event4.value()).toEqual({from: toDate(stringDate2), to: toDate(stringDate2)});
+        expect(range3).toEqual({from: toDate(stringDate1), to: toDate(stringDate1)});
+        expect(range4).toEqual({from: toDate(stringDate2), to: toDate(stringDate2)});
 
         expect(customParser).toHaveBeenCalledTimes(2);
         expect(customParser).toHaveBeenCalledWith(stringDate1);
@@ -67,52 +65,15 @@ describe('Utils: event-store', () => {
         expect(customParser).toHaveReturnedWith(toDate(stringDate2));
     });
 
-    it('createEvent: should return an event', async () => {
-        const event = createEvent(EventTypes.ADD, {from: date1, to: date1});
-
-        expect(event.value()).toEqual({from: date1, to: date1});
-        expect(event.type).toEqual(EventTypes.ADD);
-
-        const subscriber = vi.fn();
-
-        event.subscribe(subscriber);
-        event.value({from: date1, to: date2});
-
-        await flushPromises();
-
-        expect(subscriber).toHaveBeenCalledTimes(1);
-
-        const nextSubscriber = vi.fn();
-
-        event.subscribe(nextSubscriber);
-        event.value({from: date1, to: date3});
-        event.value({from: date1, to: date4});
-
-        await flushPromises();
-
-        expect(subscriber).toHaveBeenCalledTimes(2);
-        expect(nextSubscriber).toHaveBeenCalledTimes(1);
-        expect(event.value()).toEqual({from: date1, to: date4});
-
-        event.dispose();
-        event.value({from: date1, to: date5});
-
-        await flushPromises();
-
-        expect(subscriber).toHaveBeenCalledTimes(2);
-        expect(nextSubscriber).toHaveBeenCalledTimes(1);
-        expect(event.value()).toEqual({from: date1, to: date5});
-    });
-
     it('createEventStore: should return an event store', async () => {
-        const events = initStateToEvents();
-        const store = createEventStore(events);
+        const ranges = initStateToRanges();
+        const store = createStore(ranges);
 
-        expect(store.getState()).toEqual(events);
+        expect(store.getState()).toEqual(ranges);
 
-        const addEvent = createEvent(EventTypes.ADD, {from: date1, to: date1});
-        store.publish(addEvent);
-        store.publish(addEvent);
+        const range: DateRange = {from: date1, to: date1};
+        store.publish(range);
+        store.publish(range);
 
         expect(store.getState()).toEqual([{from: date1, to: date1}]);
 
@@ -123,30 +84,30 @@ describe('Utils: event-store', () => {
 
         expect(subscriber).toHaveBeenCalledTimes(1);
 
-        addEvent.value({from: date1, to: date2});
+        store.publish({from: date1, to: date2});
 
         await flushPromises();
 
         expect(subscriber).toHaveBeenCalledTimes(2);
 
-        addEvent.value({from: date1, to: date3});
-        addEvent.value({from: date1, to: date4});
+        store.publish({from: date1, to: date3});
+        store.publish({from: date1, to: date4});
 
         await flushPromises();
 
         expect(subscriber).toHaveBeenCalledTimes(3);
         expect(store.getState()).toEqual([{from: date1, to: date4}]);
 
-        const removeEvent1 = createEvent(EventTypes.REMOVE, {from: date1, to: date1});
-        store.publish(removeEvent1);
+        const removeRange1: DateRange = {from: date1, to: date1};
+        store.remove(removeRange1);
 
         await flushPromises();
 
         expect(store.getState()).toEqual([{from: date2, to: date4}]);
         expect(subscriber).toHaveBeenCalledTimes(4);
 
-        const removeEvent2 = createEvent(EventTypes.REMOVE, {from: date4, to: date4});
-        store.publish(removeEvent2);
+        const removeRange2: DateRange = {from: date4, to: date4};
+        store.remove(removeRange2);
 
         await flushPromises();
 
@@ -160,12 +121,12 @@ describe('Utils: event-store', () => {
         expect(subscriber).toHaveBeenCalledTimes(6);
         expect(store.getState()).toEqual([]);
 
-        const addEvent1 = createEvent(EventTypes.ADD, {from: date5, to: date5});
+        const addRange1 = {from: date5, to: date5};
 
-        store.publish(addEvent1);
+        store.publish(addRange1);
         expect(store.getState()).toEqual([{from: date5, to: date5}]);
 
-        store.remove(addEvent1);
+        store.remove(addRange1);
         expect(store.getState()).toEqual([]);
 
         await flushPromises();
@@ -173,31 +134,30 @@ describe('Utils: event-store', () => {
         expect(subscriber).toHaveBeenCalledTimes(7);
     });
 
-    it('queryState: should return an event which matches the date range', () => {
-        const events = initStateToEvents();
-        const store = createEventStore(events);
+    it('includes: should return boolean value, true if date is included in ranges', () => {
+        let ranges = initStateToRanges();
 
-        const addEvent = createEvent(EventTypes.ADD, {from: date1, to: date1});
+        const addRange = {from: date1, to: date1};
 
-        store.publish(addEvent);
+        ranges = push(ranges, addRange);
 
-        expect(queryState(events, date1)).toEqual({from: date1, to: date1});
+        expect(includes(ranges, date1)).toBe(true);
 
-        addEvent.value({from: date1, to: date4});
+        ranges = push(ranges, ({from: date1, to: date4}));
 
-        expect(queryState(events, date1)).toEqual({from: date1, to: date4});
-        expect(queryState(events, date2)).toEqual({from: date1, to: date4});
+        expect(includes(ranges, date1)).toBe(true);
+        expect(includes(ranges, date2)).toBe(true);
 
-        const removeEvent = createEvent(EventTypes.REMOVE, {from: date2, to: date2});
+        const removeRange = {from: date2, to: date2};
 
-        store.publish(removeEvent);
+        ranges = pop(ranges, removeRange);
 
-        expect(queryState(events, date1)).toEqual({from: date1, to: date4});
-        expect(queryState(events, date3)).toEqual({from: date1, to: date4});
-        expect(queryState(events, date4)).toEqual({from: date1, to: date4});
-        expect(queryState(events, date2)).toEqual(null);
-        expect(queryState(events, date5)).toEqual(null);
-        expect(queryState(events, date6)).toEqual(null);
+        expect(includes(ranges, date1)).toBe(true);
+        expect(includes(ranges, date3)).toBe(true);
+        expect(includes(ranges, date4)).toBe(true);
+        expect(includes(ranges, date2)).toBe(false);
+        expect(includes(ranges, date5)).toBe(false);
+        expect(includes(ranges, date6)).toBe(false);
     });
 
     it('mergeAddEvent: should return meged date ranges', () => {
@@ -206,17 +166,17 @@ describe('Utils: event-store', () => {
             {from: date3, to: date4}
         ];
 
-        expect(mergeAddEvent(ranges, {from: date1, to: date1})).toEqual([
+        expect(push(ranges, {from: date1, to: date1})).toEqual([
             {from: date2, to: date3},
             {from: date3, to: date4},
             {from: date1, to: date1}
         ])
 
-        expect(mergeAddEvent(ranges, {from: date1})).toEqual([{from: date1}]);
-        expect(mergeAddEvent(ranges, {from: date3})).toEqual([{from: date2}]);
-        expect(mergeAddEvent(ranges, {to: date4})).toEqual([{to: date4}]);
-        expect(mergeAddEvent(ranges, {to: date3})).toEqual([{to: date4}]);
-        expect(mergeAddEvent(ranges, {from: date1, to: date3})).toEqual([{from: date1, to: date4}])
+        expect(push(ranges, {from: date1})).toEqual([{from: date1}]);
+        expect(push(ranges, {from: date3})).toEqual([{from: date2}]);
+        expect(push(ranges, {to: date4})).toEqual([{to: date4}]);
+        expect(push(ranges, {to: date3})).toEqual([{to: date4}]);
+        expect(push(ranges, {from: date1, to: date3})).toEqual([{from: date1, to: date4}])
     });
 
     it('mergeRemoveEvent: should return meged date ranges', () => {
@@ -224,16 +184,16 @@ describe('Utils: event-store', () => {
             {from: date1, to: date3}
         ];
 
-        expect(mergeRemoveEvent(ranges, {from: date1})).toEqual([]);
-        expect(mergeRemoveEvent(ranges, {from: date2})).toEqual([{from: date1, to: date1}]);
-        expect(mergeRemoveEvent(ranges, {from: date3})).toEqual([{from: date1, to: date2}]);
-        expect(mergeRemoveEvent(ranges, {to: date4})).toEqual([]);
-        expect(mergeRemoveEvent(ranges, {to: date3})).toEqual([]);
-        expect(mergeRemoveEvent(ranges, {to: date2})).toEqual([{from: date3, to: date3}]);
-        expect(mergeRemoveEvent(ranges, {to: date1})).toEqual([{from: date2, to: date3}]);
-        expect(mergeRemoveEvent(ranges, {from: date1, to: date1})).toEqual([{from: date2, to: date3}]);
-        expect(mergeRemoveEvent(ranges, {from: date1, to: date2})).toEqual([{from: date3, to: date3}]);
-        expect(mergeRemoveEvent(ranges, {from: date2, to: date2})).toEqual([{from: date1, to: date1}, {from: date3, to: date3}]);
+        expect(pop(ranges, {from: date1})).toEqual([]);
+        expect(pop(ranges, {from: date2})).toEqual([{from: date1, to: date1}]);
+        expect(pop(ranges, {from: date3})).toEqual([{from: date1, to: date2}]);
+        expect(pop(ranges, {to: date4})).toEqual([]);
+        expect(pop(ranges, {to: date3})).toEqual([]);
+        expect(pop(ranges, {to: date2})).toEqual([{from: date3, to: date3}]);
+        expect(pop(ranges, {to: date1})).toEqual([{from: date2, to: date3}]);
+        expect(pop(ranges, {from: date1, to: date1})).toEqual([{from: date2, to: date3}]);
+        expect(pop(ranges, {from: date1, to: date2})).toEqual([{from: date3, to: date3}]);
+        expect(pop(ranges, {from: date2, to: date2})).toEqual([{from: date1, to: date1}, {from: date3, to: date3}]);
     });
 
     it('excludeState', () => {
@@ -263,41 +223,16 @@ describe('Utils: event-store', () => {
         expect(getRange(range3)).toEqual([date3.getTime(), date4.getTime()]);
     });
 
-    it('flatState', () => {
-        const events: IEvent[] = [
-            createEvent(EventTypes.ADD, {from: date1, to: date2}),
-            createEvent(EventTypes.ADD, {from: date2, to: date3}),
-            createEvent(EventTypes.ADD, {from: date3, to: date4}),
-            createEvent(EventTypes.ADD, {from: date4, to: date5}),
-            createEvent(EventTypes.ADD, {from: date5, to: date6})
-        ];
-
-        expect(flatState(events)).toEqual([{from: date1, to: date6}]);
-
-        events.push(createEvent(EventTypes.REMOVE, {from: date2, to: date2}));
-        events.push(createEvent(EventTypes.REMOVE, {from: date4, to: date5}));
-
-        expect(flatState(events)).toEqual([{from: date1, to: date1}, {from: date3, to: date3}, {from: date6, to: date6}]);
-
-        events.push(createEvent(EventTypes.ADD, {from: date1, to: date5}));
-
-        expect(flatState(events)).toEqual([{from: date6, to: date6}, {from: date1, to: date5}]);
-
-        const events2: IEvent[] = [createEvent(EventTypes.ADD)];
-
-        expect(flatState(events2)).toEqual([]);
-    });
-
     it('is', () => {
-        const store = createEventStore([]);
-        store.publish(createEvent(EventTypes.ADD, {from: date1, to: date1}));
+        const store = createStore([]);
+        store.publish({from: date1, to: date1});
 
-        expect(is(store, date1)).toEqual(true);
-        expect(is(store, date2)).toEqual(false);
-        expect(is(store, date3)).toEqual(false);
+        expect(is(store, date1)).toBe(true);
+        expect(is(store, date2)).toBe(false);
+        expect(is(store, date3)).toBe(false);
 
-        store.publish(createEvent(EventTypes.REMOVE, {from: date1, to: date1}));
-        store.publish(createEvent(EventTypes.ADD, {from: date2, to: date2}));
+        store.remove({from: date1, to: date1});
+        store.publish({from: date2, to: date2});
 
         expect(is(store, date1)).toEqual(false);
         expect(is(store, date2)).toEqual(true);
@@ -305,23 +240,29 @@ describe('Utils: event-store', () => {
     });
 
     it('add', () => {
-        const store = createEventStore([]);
+        const store = createStore([]);
         add(store, date1);
 
         expect(store.getState()).toEqual([{from: date1, to: date1}]);
 
-        add(store, date1, date2);
+        add(store, {
+            from: date1,
+            to: date2
+        });
 
         expect(store.getState()).toEqual([{from: date1, to: date2}]);
 
-        add(store, date5, date6);
+        add(store, {
+            from: date5,
+            to: date6
+        });
 
         expect(store.getState()).toEqual([{from: date1, to: date2}, {from: date5, to: date6}]);
     });
 
     it('remove', () => {
-        const store = createEventStore([]);
-        store.publish(createEvent(EventTypes.ADD, {from: date1, to: date1}));
+        const store = createStore([]);
+        store.publish({from: date1, to: date1});
 
         expect(store.getState()).toEqual([{from: date1, to: date1}]);
 
@@ -329,38 +270,50 @@ describe('Utils: event-store', () => {
 
         expect(store.getState()).toEqual([]);
 
-        store.publish(createEvent(EventTypes.ADD, {from: date2, to: date2}));
-        store.publish(createEvent(EventTypes.ADD, {from: date4, to: date4}));
-        store.publish(createEvent(EventTypes.ADD, {from: date6, to: date6}));
+        store.publish({from: date2, to: date2});
+        store.publish({from: date4, to: date4});
+        store.publish({from: date6, to: date6});
 
         expect(store.getState()).toEqual([{from: date2, to: date2}, {from: date4, to: date4}, {from: date6, to: date6}]);
 
-        remove(store, date4, date6);
+        remove(store, {
+            from: date4,
+            to: date6
+        });
 
         expect(store.getState()).toEqual([{from: date2, to: date2}]);
 
-        remove(store, date1, date6);
+        remove(store, {
+            from: date1,
+            to: date6
+        });
 
         expect(store.getState()).toEqual([]);
     });
 
     it('replace', () => {
-        const store = createEventStore([]);
+        const store = createStore([]);
         replace(store, date1);
 
         expect(store.getState()).toEqual([{from: date1, to: date1}]);
 
-        replace(store, date1, date2);
+        replace(store, {
+            from: date1,
+            to: date2
+        });
 
         expect(store.getState()).toEqual([{from: date1, to: date2}]);
 
-        replace(store, date5, date6);
+        replace(store, {
+            from: date5,
+            to: date6
+        });
 
         expect(store.getState()).toEqual([{from: date5, to: date6}]);
     });
 
     it('dateToggle', () => {
-        const store = createEventStore([]);
+        const store = createStore([]);
 
         dateToggle(store, date1);
         expect(store.getState()).toEqual([{from: date1, to: date1}]);
@@ -376,14 +329,62 @@ describe('Utils: event-store', () => {
     });
 
     it('clear', () => {
-        const store = createEventStore([]);
+        const store = createStore([]);
 
-        store.publish(createEvent(EventTypes.ADD, {from: date1, to: date1}));
-        store.publish(createEvent(EventTypes.ADD, {from: date2, to: date2}));
-        store.publish(createEvent(EventTypes.ADD, {from: date3, to: date3}));
+        store.publish({from: date1, to: date1});
+        store.publish({from: date2, to: date2});
+        store.publish({from: date3, to: date3});
 
         clear(store);
 
         expect(store.getState()).toEqual([]);
     });
+
+    it('sort', () => {
+        const ranges1: DateRange[] = [
+            {from: date3, to: date3},
+            {from: date1, to: date1},
+            {from: date2, to: date2}
+        ];
+
+        expect (sort(ranges1)).toEqual([
+            {from: date1, to: date1},
+            {from: date2, to: date2},
+            {from: date3, to: date3}
+        ]);
+
+        const ranges2: DateRange[] = [
+            {from: date3, to: date3},
+            {to: date2},
+            {from: date1, to: date1}
+        ];
+
+        expect (sort(ranges2)).toEqual([
+            {to: date2},
+            {from: date1, to: date1},
+            {from: date3, to: date3}
+        ]);
+
+        const ranges3: DateRange[] = [
+            {to: date3},
+            {to: date1},
+            {to: date2}
+        ];
+
+        expect (sort(ranges3)).toEqual([
+            {to: date1},
+            {to: date2},
+            {to: date3}
+        ]);
+
+        const ranges4: DateRange[] = [
+            {from: date3, to: date3},
+            {from: date3, to: date3}
+        ];
+
+        expect (sort(ranges4)).toEqual([
+            {from: date3, to: date3},
+            {from: date3, to: date3}
+        ]);
+    })
 });

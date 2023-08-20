@@ -1,5 +1,5 @@
 import { toDate } from "./date";
-import { createEventStore } from "./event-store";
+import { createStore } from "./event-store";
 import { createRangeSelector } from "./select-range";
 import { call, flushPromises } from "./test-utils";
 
@@ -13,12 +13,11 @@ describe('Utils: select-range', () => {
         const date6 = toDate('2023-01-06');
 
         const {updateSelector, activateSelector} = createRangeSelector();
-        const store = createEventStore([]);
+        const store = createStore([]);
         const subscriber = vi.fn();
 
         store.subscribe(subscriber);
 
-        
         call(() => updateSelector(store, date1), 10);
 
         expect(store.getState()).toEqual([]);
@@ -29,7 +28,7 @@ describe('Utils: select-range', () => {
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(2);
+        expect(subscriber).toHaveBeenCalledTimes(1);
 
         updateSelector(store, date2);
         expect(store.getState()).toEqual([{from: date1, to: date2}]);
@@ -42,13 +41,13 @@ describe('Utils: select-range', () => {
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(3);
+        expect(subscriber).toHaveBeenCalledTimes(2);
 
         call(() => updateSelector(store, date5), 10);
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(subscriber).toHaveBeenCalledTimes(3);
 
         activateSelector(store, date5);
 
@@ -56,11 +55,19 @@ describe('Utils: select-range', () => {
 
         await flushPromises();
 
-        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(subscriber).toHaveBeenCalledTimes(3);
 
         call(() => updateSelector(store, date6), 10);
 
-        expect(subscriber).toHaveBeenCalledTimes(4);
+        expect(subscriber).toHaveBeenCalledTimes(3);
+
+        await flushPromises();
+
+        expect(subscriber).toHaveBeenCalledTimes(3);
+
+        activateSelector(store, date2);
+
+        expect(store.getState()).toEqual([{from: date2, to: date2}]);
 
         await flushPromises();
 

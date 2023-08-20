@@ -3,7 +3,7 @@ import { Mock } from "vitest";
 import { ControllerCommand } from "../types/type";
 import { IBus } from "../utils/command-bus";
 import { toDate, today } from "../utils/date";
-import { createEventStore } from "../utils/event-store";
+import { createStore } from "../utils/event-store";
 import { flushPromises } from "../utils/test-utils";
 import { SharedCommand, bindAction, createBaseController } from "./controller-base";
 
@@ -15,7 +15,7 @@ describe('Core: controller base', () => {
     });
     
     it('bindAction', () => {
-        const store = createEventStore([]);
+        const store = createStore([]);
         const reducer = vi.fn();
 
         const bind = bindAction(store, customParser);
