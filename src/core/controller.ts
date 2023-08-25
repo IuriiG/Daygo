@@ -14,6 +14,7 @@ export type ControllerConfig = {
 }
 
 type ControllerType = FocusController & SelectController & DisableController & {
+    clear: () => void;
     getState: () => DateRange[];
     getConfig: () => ControllerConfig | undefined;
     onFocusChange: (subscriber: EventSubscriber) => () => void;
@@ -45,6 +46,10 @@ export const createController = (config?: ControllerConfig): Controller => {
         ...focusController,
         ...selectController,
         ...disableController,
+        clear: () => {
+            disableController.enableAll();
+            selectController.unselectAll();
+        },
         getState: () => excludeState(controller.getSelected(), controller.getDisabled()),
         onFocusChange: (subscriber: EventSubscriber) => {
             const subscribeEffect = createEffect(() => subscriber(controller));

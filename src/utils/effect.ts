@@ -6,5 +6,5 @@ export const createEffect = (effect: () => void) => {
             effect();
             task = null;
         });
-    }
-}
+    };
+};

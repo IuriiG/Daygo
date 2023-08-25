@@ -1,8 +1,8 @@
-import { toRange } from "../tools";
+import { getRange } from "../tools";
 import { isSame } from "./date";
 import { IStore, DateRange } from "./event-store";
 
-export const createRangeSelector = () => {
+export function createRangeSelector() {
     let isActive = false;
     let rangeEvent: DateRange | null = null;
 
@@ -23,7 +23,7 @@ export const createRangeSelector = () => {
         if (!isActive) return;
 
         rangeEvent && store.remove(rangeEvent);
-        rangeEvent = toRange(date);
+        rangeEvent = getRange(date);
         store.publish(rangeEvent);
     };
 

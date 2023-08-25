@@ -1,7 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-rest-params */
 
-import { IStore, createStore, add, dateToggle, is, remove, replace, clear, DateRange, initStateToRanges } from "../utils/event-store";
+import {
+    is,
+    add,
+    clear,
+    addAll,
+    remove,
+    IStore,
+    replace,
+    DateRange,
+    dateToggle,
+    createStore,
+    initStateToRanges
+} from "../utils/event-store";
 import { IBus } from '../utils/command-bus';
 import { ControllerCommand, CustomParser } from '../types/type';
 import { castDate } from '../utils/common';
@@ -47,6 +59,7 @@ export const createBaseController = (bus: IBus<ControllerCommand>, init: InitSta
         add: bind(add),
         reset: bind(clear),
         remove: bind(remove),
+        addAll: bind(addAll),
         replace: bind(replace),
         toggle: bind(dateToggle),
         getState: eventStore.getState,

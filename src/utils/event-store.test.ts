@@ -6,14 +6,15 @@ import {
     push,
     sort,
     clear,
+    addAll,
     remove,
     replace,
     includes,
-    getRange,
     DateRange,
     dateToggle,
     createStore,
     excludeState,
+    extractRange,
     initStateToRanges
 } from './event-store';
 import { flushPromises } from './test-utils';
@@ -213,14 +214,14 @@ describe('Utils: event-store', () => {
         ])
     });
 
-    it('getRange', () => {
+    it('extractRange', () => {
         const range1 = {from: date1};
         const range2 = {to: date2};
         const range3 = {from: date3, to: date4};
 
-        expect(getRange(range1)).toEqual([date1.getTime(), Infinity]);
-        expect(getRange(range2)).toEqual([-Infinity, date2.getTime()]);
-        expect(getRange(range3)).toEqual([date3.getTime(), date4.getTime()]);
+        expect(extractRange(range1)).toEqual([date1.getTime(), Infinity]);
+        expect(extractRange(range2)).toEqual([-Infinity, date2.getTime()]);
+        expect(extractRange(range3)).toEqual([date3.getTime(), date4.getTime()]);
     });
 
     it('is', () => {
@@ -258,6 +259,13 @@ describe('Utils: event-store', () => {
         });
 
         expect(store.getState()).toEqual([{from: date1, to: date2}, {from: date5, to: date6}]);
+    });
+
+    it('addAll', () => {
+        const store = createStore([]);
+        addAll(store);
+
+        expect(store.getState()).toEqual([{}]);
     });
 
     it('remove', () => {

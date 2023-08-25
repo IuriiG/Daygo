@@ -11,8 +11,7 @@ describe('Core: day', () => {
 
         expect(day1.date).toEqual(date1);
         expect(day1.iso).toBe(toISO(date1));
-        expect(day1.dayNumber).toBe(dayNumber(date1));
-        expect(day1.isWeekend).toBe(isWeekendCheck(day1.dayNumber));
+        expect(day1.isWeekend).toBe(isWeekendCheck(dayNumber(day1.date)));
         expect(day1.isDisabled).toBe(false);
         expect(day1.isSelected).toBe(false);
         expect(day1.isToday).toBe(false);
@@ -22,8 +21,6 @@ describe('Core: day', () => {
 
         expect(day2.date).toEqual(currentDay);
         expect(day2.iso).toBe(toISO(currentDay));
-        expect(day2.dayNumber).toBe(dayNumber(currentDay));
-        expect(day2.isWeekend).toBe(isWeekendCheck(day2.dayNumber));
         expect(day2.isDisabled).toBe(true);
         expect(day2.isSelected).toBe(true);
         expect(day2.isToday).toBe(true);

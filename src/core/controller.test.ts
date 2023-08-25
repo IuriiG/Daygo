@@ -41,8 +41,8 @@ describe('Core: controller', () => {
         expect(controller.onDisableChange).toBeDefined();
         expect(controller.onFocusChange).toBeDefined();
         expect(controller.onSelectChange).toBeDefined();
-        expect(controller.resetDisabled).toBeDefined();
-        expect(controller.resetSelected).toBeDefined();
+        expect(controller.enableAll).toBeDefined();
+        expect(controller.unselectAll).toBeDefined();
         expect(controller.selectDate).toBeDefined();
         expect(controller.selectDateMultiple).toBeDefined();
         expect(controller.startStopRangeAuto).toBeDefined();

@@ -19,10 +19,11 @@ export const createDisableController = (bus: IBus<ControllerCommand>, init: Disa
         isDisabled: basicController.is,
         enableDate: basicController.remove,
         disableDate: basicController.add,
-        resetDisabled: basicController.reset,
+        enableAll: basicController.reset,
         getDisabled: basicController.getState,
         disableDateToggle: basicController.toggle,
-        onDisableChange: basicController.subscribe
+        onDisableChange: basicController.subscribe,
+        disableAll: basicController.addAll
     }
 }
 

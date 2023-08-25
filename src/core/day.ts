@@ -1,11 +1,10 @@
 import { dayNumber, isSameMonth, isToday, toISO } from "../utils/date";
-import { WeekStarts, isWeekendCheck } from "../utils/helpers";
+import { isWeekendCheck } from "../utils/helpers";
 
 export interface IDay {
     readonly date: Date;
     readonly iso: string;
     readonly isToday: boolean;
-    readonly dayNumber: number;
     readonly isWeekend: boolean;
     readonly isDisabled: boolean;
     readonly isSelected: boolean;
@@ -22,7 +21,6 @@ export const createDay = (date: Date, focusedDate: Date, init: DayUpdate): IDay 
         date,
         iso: toISO(date),
         isToday: isToday(date),
-        dayNumber: dayNumber(date),
         isWeekend: isWeekendCheck(dayNumber(date)),
         isCurrentMonth: isSameMonth(date, focusedDate),
         isDisabled,

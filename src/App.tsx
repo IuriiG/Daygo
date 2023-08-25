@@ -3,6 +3,7 @@ import { createDatePicker } from "./core/date-picker"
 import { useConst } from "./hooks/useConst"
 import { Controller } from "./core/controller";
 import { mergeRanges } from "./tools";
+import { addMonth, today } from "./utils/date";
 
 let count = 0;
 let grid: any;
@@ -59,7 +60,7 @@ const m = {
 
 
 function App() {
-    const dp = useConst(() => createDatePicker({isFixed: false, weekStartsOn: 1 }));
+    const dp = useConst(() => createDatePicker({isFixed: true, weekStartsOn: 1 }));
     const [isSelect, setIsSelect] = useState(true);
     const toggle = () => setIsSelect(prev => !prev)
     const c = dp.controller;
@@ -93,10 +94,6 @@ function App() {
     //     controllerLocal.showNextMonth();
     // })
     // c.onSelectChange()
-    // c.publishDisableEvent()
-    // c.publishSelectEvent()
-    // c.removeDisableEvent()
-    // c.removeSelectEvent()
     // c.resetDisabled()
     // c.resetSelected()
     // c.selectDate()
@@ -127,16 +124,25 @@ function App() {
                     // if (day.isSelected) {
                     //     console.log(day)
                     // }
-                    const background = day.isSelected ? 'red' : 'transparent';
+                    const background = day.isDisabled ? 'gray' : day.isSelected ? 'red' : 'transparent';
+                    const outline = day.isToday ? '2px solid red' : '1px solid black';
                     // console.table({date: day.date, isSelected: day.isSelected, background})
                     // console.log(day.iso, day.date.toISOString(), day.date)
+                    // console.log(day.iso, outline)
                     return (
                         <div key={day.iso}
+                            // onClick={() => dp.controller.selectDate(day.date)}
+                            onClick={() => dp.controller.toggleSelectDate(day.date)}
+                            // onClick={() => dp.controller.disableDate(day.date)}
+                            onContextMenu={(e) => {e.preventDefault(), dp.controller.disableDate(day.date)}}
+                            // onClick={() => dp.controller.disableDateToggle(day.date)}
+                            // onClick={() => dp.controller.focusDate(addMonth(day.date, 1))}
+                            // onClick={() => dp.controller.focusToday()}
                             // onClick={() => dp.controller.toggleSelectDate(day.date)}
                             // onClick={() => dp.controller.toggleSelectDate(day.date)}
                             // onClick={() => dp.controller.selectDate(day.date)}
-                            onClick={() => dp.controller.startStopRangeAuto(day.date)}
-                            onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
+                            // onClick={() => dp.controller.startStopRangeAuto(day.date)}
+                            // onMouseMove={() => dp.controller.updateRangeAuto(day.date)}
                             // onClick={() => {
                             //     if (isSelect) {
                             //         dp.controller.startStopRangeAuto(day.date)
@@ -146,9 +152,9 @@ function App() {
                             //     dp.controller.toggleSelectDate(day.date);
                             // }}
                         style={{
+                            outline,
                             background,
                             height: '20px',
-                            outline: '1px solid black',
                             cursor: 'pointer'
                         }}>
                             {day.date.getDate()}
@@ -163,20 +169,76 @@ function App() {
             <button type='button' onClick={() => dp.controller.focusNextMonth()}>NEXT MONTH</button>
             <button type='button' onClick={toggle}>TOGGLE IS SELECT</button>
             <button type='button' onClick={() => {
-                console.log(mergeRanges(dp.controller.getSelected()))
+                console.log(dp.controller.getSelected())
             }}>GET SELECTED</button>
             <button type='button' onClick={() => {
-                dp.controller.selectDateMultiple({
+                console.log(dp.controller.getDisabled())
+            }}>GET DISABLED</button>
+            <button type='button' onClick={() => {
+                console.log(dp.controller.getState())
+            }}>GET STATE</button>
+            <button type='button' onClick={() => {
+                dp.controller.selectDate({
                     from: new Date('2023-08-10'),
                     to: new Date('2023-08-15')
                 })
             }}>SELECT MULTIPLE</button>
             <button type='button' onClick={() => {
                 dp.controller.unselectDate({
-                    from: new Date('2023-08-10'),
-                    to: new Date('2023-08-15')
+                    from: new Date('2023-08-12'),
+                    to: new Date('2023-08-14')
                 })
             }}>UNSELECT MULTIPLE</button>
+        </div>
+        <div>
+            <button type='button' onClick={() => {
+                dp.controller.selectAll();
+                console.log(dp.controller.getState())
+            }}>SELECT ALL</button>
+            <button type='button' onClick={() => {
+                dp.controller.unselectAll()
+                console.log(dp.controller.getState())
+            }}>UNSELECT ALL</button>
+            <button type='button' onClick={() => {
+                dp.controller.selectDateMultiple({from: today()})
+                console.log(dp.controller.getState())
+            }}>SELECT FUTURE</button>
+            <button type='button' onClick={() => {
+                dp.controller.selectDateMultiple({to: today()})
+                console.log(dp.controller.getState())
+            }}>SELECT PAST</button>
+        </div>
+        <div>
+            <button type='button' onClick={() => {
+                dp.controller.disableAll();
+                console.log(dp.controller.getState())
+            }}>DISABLE ALL</button>
+            <button type='button' onClick={() => {
+                dp.controller.enableAll()
+                console.log(dp.controller.getState())
+            }}>ENABLE ALL</button>
+            <button type='button' onClick={() => {
+                dp.controller.disableDate({from: today()})
+                console.log(dp.controller.getState())
+            }}>DISABLE FUTURE</button>
+            <button type='button' onClick={() => {
+                dp.controller.disableDate({to: today()})
+                console.log(dp.controller.getState())
+            }}>DISABLE PAST</button>
+            <button type='button' onClick={() => {
+                dp.controller.enableDate({from: today()})
+                console.log(dp.controller.getState())
+            }}>ENABLE FUTURE</button>
+            <button type='button' onClick={() => {
+                dp.controller.enableDate({to: today()})
+                console.log(dp.controller.getState())
+            }}>ENABLE PAST</button>
+        </div>
+        <div>
+            <button type='button' onClick={() => {
+                dp.controller.clear();
+                console.log(dp.controller.getState())
+            }}>CLEAR</button>
         </div>
         </>
     )
