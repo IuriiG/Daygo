@@ -1,0 +1,48 @@
+{
+    "name": "@daygo/core",
+    "version": "1.0.0",
+    "description": "The framework agnostic core that powers Daygo - headless datepicker library",
+    "author": "IuriiG",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/IuriiG/reactive_dp.git",
+        "directory": "packages/core"
+    },
+    "homepage": "https://github.com/IuriiG/reactive_dp",
+    "types": "build/lib/index.d.ts",
+    "main": "build/lib/index.js",
+    "module": "build/lib/index.esm.js",
+    "exports": {
+        ".": {
+            "types": "./build/lib/index.d.ts",
+            "import": "./build/lib/index.mjs",
+            "default": "./build/lib/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "files": [
+        "build/lib/*",
+        "build/umd/*",
+        "src"
+    ],
+    "keywords": [
+        "date",
+        "datepicker",
+        "reactive",
+        "reactivity",
+        "batching",
+        "library",
+        "headless",
+        "daygo"
+    ],
+    "scripts": {
+        "lint:fix": "eslint --ext .ts, ./src --fix",
+        "test:eslint": "eslint --ext .ts, ./src",
+        "test:types": "tsc",
+        "test": "npm run test:eslint && npm run test:types && vitest run",
+        "test:watch": "vitest",
+        "build:types": "tsc --build"
+    }
+}

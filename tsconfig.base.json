@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ES2020"
+        ],
+        "target": "ES2020",
+        "module": "ES2020",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noUncheckedIndexedAccess": true,
+        "strictNullChecks": true,
+        "jsx": "react",
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "composite": true,
+        "types": [
+            "vitest/globals"
+        ],
+        "paths": {
+            "@daygo/core": ["packages/core/src"],
+            "@daygo/react": ["packages/react/src"]
+        }
+    },
+    "include": [
+        "./vite.config.ts"
+    ]
+}
