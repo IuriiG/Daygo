@@ -78,6 +78,7 @@ module.exports = {
         'comma-dangle': ['error', 'never'],
         'object-curly-spacing': ["error", "always"],
         'semi': ["error", "always"],
+        'indent': ['error', 'tab'],
         'no-multiple-empty-lines': 'error',
         'sort-imports': ['error', { ignoreDeclarationSort: true }]
     },

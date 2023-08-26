@@ -9,27 +9,27 @@ export type SelectControllerInit = {
 }
 
 export const createSelectController = (bus: IBus<ControllerCommand>, init: SelectControllerInit) => {
-    const { selectedDates, customParser } = init;
-    const { updateSelector, activateSelector } = createRangeSelector();
+	const { selectedDates, customParser } = init;
+	const { updateSelector, activateSelector } = createRangeSelector();
 
-    const { bind, ...basicController } = createBaseController(bus, {
-        initState: selectedDates,
-        customParser
-    });
+	const { bind, ...basicController } = createBaseController(bus, {
+		initState: selectedDates,
+		customParser
+	});
 
-    return {
-        isSelected: basicController.is,
-        selectDate: basicController.replace,
-        unselectDate: basicController.remove,
-        unselectAll: basicController.reset,
-        getSelected: basicController.getState,
-        toggleSelectDate: basicController.toggle,
-        selectDateMultiple: basicController.add,
-        onSelectChange: basicController.subscribe,
-        selectAll: basicController.addAll,
-        startStopRangeAuto: bind(activateSelector),
-        updateRangeAuto: bind(updateSelector)
-    };
+	return {
+		isSelected: basicController.is,
+		selectDate: basicController.replace,
+		unselectDate: basicController.remove,
+		unselectAll: basicController.reset,
+		getSelected: basicController.getState,
+		toggleSelectDate: basicController.toggle,
+		selectDateMultiple: basicController.add,
+		onSelectChange: basicController.subscribe,
+		selectAll: basicController.addAll,
+		startStopRangeAuto: bind(activateSelector),
+		updateRangeAuto: bind(updateSelector)
+	};
 };
 
 export type SelectController = ReturnType<typeof createSelectController>;

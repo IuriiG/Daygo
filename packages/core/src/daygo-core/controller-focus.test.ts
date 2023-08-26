@@ -7,226 +7,226 @@ import type { ControllerCommand } from "../types/type";
 import type { IBus } from "../utils/command-bus";
 
 describe('Core: controller focus', () => {
-    let bus: IBus<ControllerCommand>;
-    let send: Mock<any, any>;
-    let customParser: Mock<[date: string], Date>;
+	let bus: IBus<ControllerCommand>;
+	let send: Mock<any, any>;
+	let customParser: Mock<[date: string], Date>;
 
-    beforeEach(() => {
-        send = vi.fn();
-        customParser = vi.fn((date: string) => toDate(date));
-        bus = { send } as unknown as IBus<ControllerCommand>;
-    });
+	beforeEach(() => {
+		send = vi.fn();
+		customParser = vi.fn((date: string) => toDate(date));
+		bus = { send } as unknown as IBus<ControllerCommand>;
+	});
 
-    it('createFocusAction', async () => {
-        const bindCommand = createFocusAction(bus, customParser);
-        const focusDate = bindCommand('FOCUS_DATE');
+	it('createFocusAction', async () => {
+		const bindCommand = createFocusAction(bus, customParser);
+		const focusDate = bindCommand('FOCUS_DATE');
 
-        focusDate('2023-01-01');
+		focusDate('2023-01-01');
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(1);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_DATE',
-            payload: toDate('2023-01-01')
-        });
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_DATE',
+			payload: toDate('2023-01-01')
+		});
 
-        focusDate(today());
+		focusDate(today());
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(2);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_DATE',
-            payload: today()
-        });
+		expect(send).toHaveBeenCalledTimes(2);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_DATE',
+			payload: today()
+		});
 
-        const focusToday = bindCommand('FOCUS_TODAY');
+		const focusToday = bindCommand('FOCUS_TODAY');
 
-        focusToday();
+		focusToday();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(3);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_TODAY',
-            payload: undefined
-        });
+		expect(send).toHaveBeenCalledTimes(3);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_TODAY',
+			payload: undefined
+		});
 
-        const focusNextMonth = bindCommand('FOCUS_NEXT_MONTH');
+		const focusNextMonth = bindCommand('FOCUS_NEXT_MONTH');
 
-        focusNextMonth(2);
+		focusNextMonth(2);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(4);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_NEXT_MONTH',
-            payload: 2
-        });
+		expect(send).toHaveBeenCalledTimes(4);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_NEXT_MONTH',
+			payload: 2
+		});
 
-        focusNextMonth();
+		focusNextMonth();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(5);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_NEXT_MONTH',
-            payload: undefined
-        });
-    });
+		expect(send).toHaveBeenCalledTimes(5);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_NEXT_MONTH',
+			payload: undefined
+		});
+	});
 
-    it('createFocusController', async () => {
-        const focusController = createFocusController(bus, customParser);
+	it('createFocusController', async () => {
+		const focusController = createFocusController(bus, customParser);
 
-        focusController.focusDate(today());
+		focusController.focusDate(today());
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(1);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_DATE',
-            payload: today()
-        });
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_DATE',
+			payload: today()
+		});
 
-        focusController.focusDate('2023-01-01');
+		focusController.focusDate('2023-01-01');
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(2);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_DATE',
-            payload: toDate('2023-01-01')
-        });
+		expect(send).toHaveBeenCalledTimes(2);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_DATE',
+			payload: toDate('2023-01-01')
+		});
 
-        focusController.focusMonth(today());
+		focusController.focusMonth(today());
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(3);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_MONTH',
-            payload: today()
-        });
+		expect(send).toHaveBeenCalledTimes(3);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_MONTH',
+			payload: today()
+		});
 
-        focusController.focusMonth(4);
+		focusController.focusMonth(4);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(4);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_MONTH',
-            payload: 4
-        });
+		expect(send).toHaveBeenCalledTimes(4);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_MONTH',
+			payload: 4
+		});
 
-        focusController.focusNextMonth();
+		focusController.focusNextMonth();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(5);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_NEXT_MONTH',
-            payload: undefined
-        });
+		expect(send).toHaveBeenCalledTimes(5);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_NEXT_MONTH',
+			payload: undefined
+		});
 
-        focusController.focusNextMonth(2);
+		focusController.focusNextMonth(2);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(6);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_NEXT_MONTH',
-            payload: 2
-        });
+		expect(send).toHaveBeenCalledTimes(6);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_NEXT_MONTH',
+			payload: 2
+		});
 
-        focusController.focusNextYear();
+		focusController.focusNextYear();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(7);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_NEXT_YEAR',
-            payload: undefined
-        });
+		expect(send).toHaveBeenCalledTimes(7);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_NEXT_YEAR',
+			payload: undefined
+		});
 
-        focusController.focusNextYear(2);
+		focusController.focusNextYear(2);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(8);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_NEXT_YEAR',
-            payload: 2
-        });
+		expect(send).toHaveBeenCalledTimes(8);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_NEXT_YEAR',
+			payload: 2
+		});
 
-        focusController.focusPrevMonth();
+		focusController.focusPrevMonth();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(9);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_PREV_MONTH',
-            payload: undefined
-        });
+		expect(send).toHaveBeenCalledTimes(9);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_PREV_MONTH',
+			payload: undefined
+		});
 
-        focusController.focusPrevMonth(2);
+		focusController.focusPrevMonth(2);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(10);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_PREV_MONTH',
-            payload: 2
-        });
+		expect(send).toHaveBeenCalledTimes(10);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_PREV_MONTH',
+			payload: 2
+		});
 
-        focusController.focusPrewYear();
+		focusController.focusPrewYear();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(11);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_PREW_YEAR',
-            payload: undefined
-        });
+		expect(send).toHaveBeenCalledTimes(11);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_PREW_YEAR',
+			payload: undefined
+		});
 
-        focusController.focusPrewYear(2);
+		focusController.focusPrewYear(2);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(12);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_PREW_YEAR',
-            payload: 2
-        });
+		expect(send).toHaveBeenCalledTimes(12);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_PREW_YEAR',
+			payload: 2
+		});
 
-        focusController.focusToday();
+		focusController.focusToday();
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(13);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_TODAY',
-            payload: undefined
-        });
+		expect(send).toHaveBeenCalledTimes(13);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_TODAY',
+			payload: undefined
+		});
 
-        focusController.focusYear(today());
+		focusController.focusYear(today());
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(14);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_YEAR',
-            payload: today()
-        });
+		expect(send).toHaveBeenCalledTimes(14);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_YEAR',
+			payload: today()
+		});
 
-        focusController.focusYear(2023);
+		focusController.focusYear(2023);
 
-        await flushPromises();
+		await flushPromises();
 
-        expect(send).toHaveBeenCalledTimes(15);
-        expect(send).toHaveBeenCalledWith({
-            type: 'FOCUS_YEAR',
-            payload: 2023
-        });
-    });
+		expect(send).toHaveBeenCalledTimes(15);
+		expect(send).toHaveBeenCalledWith({
+			type: 'FOCUS_YEAR',
+			payload: 2023
+		});
+	});
 });

@@ -9,18 +9,18 @@ export type Observable = {
 }
 
 export const createObservable = (): Observable => {
-    const subscribers: Set<() => void> = new Set();
+	const subscribers: Set<() => void> = new Set();
 
-    const notify = createEffect(() => {
-        subscribers.forEach(invoke);
-    });
+	const notify = createEffect(() => {
+		subscribers.forEach(invoke);
+	});
 
-    const subscribe = (subscriber: () => void) => {
-        subscribers.add(subscriber);
-        return () => {
-            subscribers.delete(subscriber);
-        };
-    };
+	const subscribe = (subscriber: () => void) => {
+		subscribers.add(subscriber);
+		return () => {
+			subscribers.delete(subscriber);
+		};
+	};
 
-    return { notify, subscribe };
+	return { notify, subscribe };
 };
