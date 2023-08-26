@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { IBus, createCommandBus } from "../utils/command-bus";
-import { SelectController, createSelectController } from "./controller-select";
-import { FocusCommand, FocusController, createFocusController, focusCommandHandlers } from "./controller-focus";
+import { createEffect, DateRange, excludeState, IBus, createCommandBus } from "../utils";
 import { ControllerCommand, CustomParser, EventSubscriber } from "../types/type";
+import { SelectController, createSelectController } from "./controller-select";
 import { DisableController, createDisableController } from "./controller-disable";
-import { DateRange, excludeState } from "../utils/event-store";
-import { createEffect } from "../utils/effect";
+import { FocusCommand, FocusController, createFocusController, focusCommandHandlers } from "./controller-focus";
 
 export type ControllerConfig = {
     selectedDates?: Array<Date | DateRange | string>;
@@ -32,7 +30,6 @@ export type ControllerWithBus = Controller & {
 
 export const createController = (config?: ControllerConfig): Controller => {
     const {selectedDates, disabledDates, customParser} = config || {};
-    const getConfig = () => config;
 
     const $$bus = createCommandBus<ControllerCommand>();
     const focusController = createFocusController($$bus, customParser);
@@ -42,10 +39,10 @@ export const createController = (config?: ControllerConfig): Controller => {
     const controller = {
         // @ts-ignore
         $$bus,
-        getConfig,
         ...focusController,
         ...selectController,
         ...disableController,
+        getConfig: () => config,
         clear: () => {
             disableController.enableAll();
             selectController.unselectAll();

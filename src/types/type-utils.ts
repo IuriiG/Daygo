@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IStore } from "../utils/event-store";
+import { IStore } from "../utils/store";
 
 export type ToCamelCase<T extends string> = T extends `${infer A}_${infer B}${infer C}`
     ? `${Lowercase<A>}${Uppercase<B>}${ToCamelCase<C>}`

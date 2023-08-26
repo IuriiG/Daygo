@@ -16,7 +16,7 @@ import {
     excludeState,
     extractRange,
     initStateToRanges
-} from './event-store';
+} from './store';
 import { flushPromises } from './test-utils';
 
 describe('Utils: event-store', () => {

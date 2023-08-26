@@ -1,6 +1,4 @@
-import { dayNumber, isSameMonth, isToday, toISO } from "../utils/date";
-import { isWeekendCheck } from "../utils/helpers";
-
+import { dayNumber, isSameMonth, isToday, toISO, isWeekendCheck } from "../utils";
 export interface IDay {
     readonly date: Date;
     readonly iso: string;

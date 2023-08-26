@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Mock } from "vitest";
 import { ControllerCommand } from "../types/type";
-import { IBus } from "../utils/command-bus";
-import { toDate, today } from "../utils/date";
-import { createStore } from "../utils/event-store";
-import { flushPromises } from "../utils/test-utils";
+import { IBus, toDate, today, createStore, flushPromises } from "../utils";
 import { SharedCommand, bindAction, createBaseController } from "./controller-base";
 
 describe('Core: controller base', () => {

@@ -7,7 +7,7 @@ import {
     setFirstDayOfMonth,
     toDate
 } from "../utils/date";
-import { DateRange } from "./event-store";
+import { DateRange } from "./store";
 
 export type WeekStarts = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 

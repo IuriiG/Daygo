@@ -1,6 +1,6 @@
 import { getRange } from "../tools";
 import { isSame } from "./date";
-import { IStore, DateRange } from "./event-store";
+import { IStore, DateRange } from "./store";
 
 export function createRangeSelector() {
     let isActive = false;

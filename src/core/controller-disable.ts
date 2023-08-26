@@ -1,7 +1,6 @@
-import { IBus } from "../utils/command-bus";
+import { IBus, DateRange } from "../utils";
 import { createBaseController } from "./controller-base";
 import { ControllerCommand, CustomParser } from "../types/type";
-import { DateRange } from "../utils/event-store";
 
 export type DisableControllerInit = {
     disabledDates?: Array<Date | DateRange | string>;

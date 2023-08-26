@@ -1,5 +1,5 @@
 import { toDate } from "./date";
-import { createStore } from "./event-store";
+import { createStore } from "./store";
 import { createRangeSelector } from "./select-range";
 import { call, flushPromises } from "./test-utils";
 

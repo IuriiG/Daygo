@@ -9,6 +9,11 @@ export type DateRange = {
     to?: Date;
 };
 
+export type DateRangeRaw = {
+    from?: Date | string;
+    to?: Date | string;
+}
+
 export interface IStore {
     clear(): void;
     subscribe: Subscribe;
@@ -180,8 +185,8 @@ export function includes (state: DateRange[], date: Date) {
     return state.some((item) => isInRange(date, item));
 }
 
-export function extractRange (eventRange: DateRange) {
-    const {from, to} = rangeOf(eventRange.from, eventRange.to);
+export function extractRange (range: DateRange) {
+    const {from, to} = rangeOf(range.from, range.to);
     return [
         from?.getTime() ?? -Infinity,
         to?.getTime() ?? Infinity

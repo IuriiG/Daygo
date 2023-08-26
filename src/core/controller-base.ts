@@ -4,20 +4,22 @@
 import {
     is,
     add,
+    IBus,
     clear,
     addAll,
     remove,
     IStore,
     replace,
+    castDate,
     DateRange,
     dateToggle,
     createStore,
+    isValidDateInput,
     initStateToRanges
-} from "../utils/event-store";
-import { IBus } from '../utils/command-bus';
+} from "../utils";
 import { ControllerCommand, CustomParser } from '../types/type';
-import { castDate } from '../utils/common';
 import { BasicControllerAction } from '../types/type-utils';
+import { toValidRange } from "../tools";
 
 export enum SharedCommand {
     UPDATE = 'UPDATE'
@@ -35,7 +37,9 @@ export const bindAction = (store: IStore, customParser?: CustomParser) => {
         return function () {
             const args = Array.from(arguments).map((arg) => {
                 try {
-                    return castDate(arg, customParser);
+                    return isValidDateInput(arg)
+                        ? castDate(arg, customParser)
+                        : toValidRange(arg, customParser);
                 } catch (_) {
                     return arg;
                 }
