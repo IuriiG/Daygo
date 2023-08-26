@@ -1,7 +1,6 @@
-import { IBus } from "../utils/command-bus";
+import { IBus, DateRange } from "../utils";
 import { createBaseController } from "./controller-base";
 import { ControllerCommand, CustomParser } from "../types/type";
-import { DateRange } from "../utils/event-store";
 
 export type DisableControllerInit = {
     disabledDates?: Array<Date | DateRange | string>;
@@ -19,10 +18,11 @@ export const createDisableController = (bus: IBus<ControllerCommand>, init: Disa
         isDisabled: basicController.is,
         enableDate: basicController.remove,
         disableDate: basicController.add,
-        resetDisabled: basicController.reset,
+        enableAll: basicController.reset,
         getDisabled: basicController.getState,
         disableDateToggle: basicController.toggle,
-        onDisableChange: basicController.subscribe
+        onDisableChange: basicController.subscribe,
+        disableAll: basicController.addAll
     }
 }
 

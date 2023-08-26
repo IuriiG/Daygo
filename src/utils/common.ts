@@ -33,6 +33,10 @@ export const toCamelCase = <T extends string>(s: T): ToCamelCase<T> => s
         group.toUpperCase().replace('_', '')
     ) as ToCamelCase<T>;
 
+export function isValidDateInput (date: unknown): date is Date | string {
+    return isString(date) || isDate(date);
+}
+
 export const castDate = (date: unknown, customParser?: (date: string) => Date): Date => {
     if (isString(date)) date = isFunction(customParser) ? customParser(date) : parse(date);
     if (isDate(date)) return getDate(date);

@@ -1,11 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-rest-params */
 
-import { IStore, createStore, add, dateToggle, is, remove, replace, clear, DateRange, initStateToRanges } from "../utils/event-store";
-import { IBus } from '../utils/command-bus';
+import {
+    is,
+    add,
+    IBus,
+    clear,
+    addAll,
+    remove,
+    IStore,
+    replace,
+    castDate,
+    DateRange,
+    dateToggle,
+    createStore,
+    isValidDateInput,
+    initStateToRanges
+} from "../utils";
 import { ControllerCommand, CustomParser } from '../types/type';
-import { castDate } from '../utils/common';
 import { BasicControllerAction } from '../types/type-utils';
+import { toValidRange } from "../tools";
 
 export enum SharedCommand {
     UPDATE = 'UPDATE'
@@ -23,7 +37,9 @@ export const bindAction = (store: IStore, customParser?: CustomParser) => {
         return function () {
             const args = Array.from(arguments).map((arg) => {
                 try {
-                    return castDate(arg, customParser);
+                    return isValidDateInput(arg)
+                        ? castDate(arg, customParser)
+                        : toValidRange(arg, customParser);
                 } catch (_) {
                     return arg;
                 }
@@ -47,6 +63,7 @@ export const createBaseController = (bus: IBus<ControllerCommand>, init: InitSta
         add: bind(add),
         reset: bind(clear),
         remove: bind(remove),
+        addAll: bind(addAll),
         replace: bind(replace),
         toggle: bind(dateToggle),
         getState: eventStore.getState,

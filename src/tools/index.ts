@@ -1,5 +1,5 @@
-import { isSame } from "../utils/date";
-import { DateRange } from "../utils/event-store";
+import { CustomParser } from "../types/type";
+import { isSame, castDate, DateRange, DateRangeRaw, isValidDateInput } from "../utils";
 
 export const rangeToDate = (range: DateRange) => {
     const {from = null, to = null} = range;
@@ -7,9 +7,13 @@ export const rangeToDate = (range: DateRange) => {
     return null; 
 };
 
-export const toRange = (date: Date) => {
-    return {
-        from: date,
-        to: date
-    };
+export const getRange = (date: Date | undefined, customParser?: CustomParser) => {
+    const value = date && castDate(date, customParser);
+    return { from: value, to: value };
+};
+
+export const toValidRange = (range: DateRangeRaw, customParser?: CustomParser): DateRange => {
+    const from = isValidDateInput(range.from) ? castDate(range.from, customParser) : range.from;
+    const to = isValidDateInput(range.to) ? castDate(range.to, customParser) : range.to;
+    return { from, to };
 };

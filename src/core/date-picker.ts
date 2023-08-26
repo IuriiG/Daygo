@@ -1,13 +1,22 @@
-import { addDay, isSame, setFirstDayOfMonth, subtractDay, today } from "../utils/date";
-import { createEffect } from "../utils/effect";
-import { WeekStarts, getMonthLength, calculatePrevMonthLength } from "../utils/helpers";
-import { Subscribe, createObservable } from "../utils/observable";
-import { createShare } from "../utils/share";
-import { Controller, ControllerConfig, ControllerWithBus, createController } from "./controller";
+import {
+    today,
+    isSame,
+    addDay,
+    castDate,
+    Subscribe,
+    WeekStarts,
+    createShare,
+    subtractDay,
+    createEffect,
+    getMonthLength,
+    createObservable,
+    setFirstDayOfMonth,
+    calculatePrevMonthLength
+} from "../utils";
 import { IDay, createDay, updateDay } from "./day";
 import { FocusCommand, focusCommandHandlers } from "./controller-focus";
+import { Controller, ControllerConfig, ControllerWithBus, createController } from "./controller";
 import { ControllerCommand, FocusControllerCommand } from "../types/type";
-import { castDate } from "../utils/common";
 
 export type DatePickerConfig = Readonly<ControllerConfig & {
     isFixed?: boolean;
@@ -21,8 +30,8 @@ export interface IDatePicker {
     readonly focusedDate: Date;
     readonly subscribe: Subscribe;
     readonly controller: Controller;
-    getSnapshot(): number;
-    replaceController(controller: Controller): void;
+    readonly getSnapshot: () => number;
+    readonly useController: (controller: Controller) => void;
 }
 
 export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
@@ -52,25 +61,25 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
     const observable = createObservable();
     const share = createShare<ControllerCommand>();
 
-    const update = createEffect(() => {
+    const scheduleRender = createEffect(() => {
         version++;
         monthGrid.length = 0;
         observable.notify();
     });
     
-    const recalculate = () => {
+    const recalculate = createEffect(() => {
         monthGrid.forEach((day) => {
             const isDisabled = controller.isDisabled(day.date);
             const isSelected = !isDisabled && controller.isSelected(day.date);
 
-            updateDay(day, update, { isSelected, isDisabled })
-        })
-    };
+            updateDay(day, scheduleRender, { isSelected, isDisabled })
+        });
+    });
 
     const connect = () => (controller as ControllerWithBus).$$bus.subscribe(share.next);
 
-    const replaceController = (next: Controller) => {
-        update();
+    const useController = (next: Controller) => {
+        scheduleRender();
         connectionDispose();
 
         controller = next;
@@ -90,7 +99,7 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
                 return;
             }
     
-            update();
+            scheduleRender();
             return;
         }
     
@@ -114,7 +123,7 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
     const dp = {
         subscribe,
         getSnapshot,
-        replaceController,
+        useController,
         get controller() {
             return controller;
         },

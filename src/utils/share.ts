@@ -12,7 +12,7 @@ export function createShare<T>() {
         return () => {
             sub = null;
         };
-    }
+    };
 
     return {next, subscribe}
 }

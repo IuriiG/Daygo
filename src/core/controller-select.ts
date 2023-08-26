@@ -1,8 +1,6 @@
-import { IBus } from "../utils/command-bus";
-import { createRangeSelector } from "../utils/select-range";
+import { IBus, DateRange, createRangeSelector } from "../utils";
 import { createBaseController } from "./controller-base";
 import { ControllerCommand, CustomParser } from "../types/type";
-import { DateRange } from "../utils/event-store";
 
 export type SelectControllerInit = {
     selectedDates?: Array<Date | DateRange | string>;
@@ -22,11 +20,12 @@ export const createSelectController = (bus: IBus<ControllerCommand>, init: Selec
         isSelected: basicController.is,
         selectDate: basicController.replace,
         unselectDate: basicController.remove,
-        resetSelected: basicController.reset,
+        unselectAll: basicController.reset,
         getSelected: basicController.getState,
         toggleSelectDate: basicController.toggle,
         selectDateMultiple: basicController.add,
         onSelectChange: basicController.subscribe,
+        selectAll: basicController.addAll,
         startStopRangeAuto: bind(activateSelector),
         updateRangeAuto: bind(updateSelector)
     }

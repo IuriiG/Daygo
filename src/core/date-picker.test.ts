@@ -182,7 +182,7 @@ describe('Core: date-picker', () => {
         ];
         
         let count = 0;
-        notFixedStates.forEach(({ date, startDate, finishDate}, i) => {
+        notFixedStates.forEach(({ date, startDate, finishDate}) => {
             const monthGrid = generateMonth(date, isFixed, weekStartsOn, isSelected, isDisabled);
             count += monthGrid.length;
 
@@ -379,7 +379,7 @@ describe('Core: date-picker', () => {
         expect(subscriber).toHaveBeenCalledTimes(2);
     });
 
-    it ('datePicker: replaceController', async () => {
+    it ('datePicker: useController', async () => {
         const externalController = createController();
         const datePicker = createDatePicker({
             defaultMonth: '2023-01-01',
@@ -408,7 +408,7 @@ describe('Core: date-picker', () => {
 
         const prevController = datePicker.controller;
 
-        datePicker.replaceController(externalController);
+        datePicker.useController(externalController);
         prevController.focusNextMonth();
 
         await flushPromises();

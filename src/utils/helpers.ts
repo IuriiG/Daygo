@@ -7,13 +7,15 @@ import {
     setFirstDayOfMonth,
     toDate
 } from "../utils/date";
-import { DateRange } from "./event-store";
+import { DateRange } from "./store";
 
 export type WeekStarts = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export function isInRange(date: Date, range: DateRange) {
     const { from: rawFrom, to: rawTo } = range;
     const { from, to } = rangeOf(rawFrom, rawTo);
+
+    if (!from && !to) return true;
 
     const isBeforeTo = Boolean(to && (isSame(date, toDate(to)) || isBefore(date, toDate(to))));
     const isAfterFrom = Boolean(from && (isSame(date, toDate(from)) || isAfter(date, toDate(from))));
@@ -24,48 +26,6 @@ export function isInRange(date: Date, range: DateRange) {
 export function isWeekendCheck (dayNumber: number): boolean {
     return dayNumber === 6 || dayNumber === 0;
 }
-
-/**
-0
-
-2 - 0 = 2
-
-0 1 2 3  4 5 6
-30 31 1 2 3  4 5
-6 7 8 9 10 11 12
-
- */
-
-/**
-1
-
-2 - 1 = 1
-
-31 1 2 3  4 5 6
-7 8 9 10 11 12 13
-
- */
-
-/**
-2
-
-2 - 2 = 0
-
-25 26 27 28 29 30 31
-1 2 3  4 5 6 7
-8 9 10 11 12 13 14
-
- */
-/**
-3
-
-2 - 3 = -1
-
-26 27 28 29 30 31 1
-2 3  4 5 6 7 8
-9 10 11 12 13 14 15
-
- */
 
 export function calculatePrevMonthLength(date: Date, weekStartsOn: WeekStarts): number {
     const firstDayNumber = dayNumber(setFirstDayOfMonth(date)) - weekStartsOn;

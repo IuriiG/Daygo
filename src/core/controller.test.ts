@@ -36,13 +36,16 @@ describe('Core: controller', () => {
         expect(controller.getConfig).toBeDefined();
         expect(controller.getDisabled).toBeDefined();
         expect(controller.getSelected).toBeDefined();
+        expect(controller.disableAll).toBeDefined();
+        expect(controller.clear).toBeDefined();
+        expect(controller.selectAll).toBeDefined();
         expect(controller.isDisabled).toBeDefined();
         expect(controller.isSelected).toBeDefined();
         expect(controller.onDisableChange).toBeDefined();
         expect(controller.onFocusChange).toBeDefined();
         expect(controller.onSelectChange).toBeDefined();
-        expect(controller.resetDisabled).toBeDefined();
-        expect(controller.resetSelected).toBeDefined();
+        expect(controller.enableAll).toBeDefined();
+        expect(controller.unselectAll).toBeDefined();
         expect(controller.selectDate).toBeDefined();
         expect(controller.selectDateMultiple).toBeDefined();
         expect(controller.startStopRangeAuto).toBeDefined();
@@ -109,5 +112,14 @@ describe('Core: controller', () => {
         expect(customParser).toHaveBeenCalledWith('2023-01-01');
         expect(customParser).toHaveBeenCalledWith('2023-01-02');
         expect(customParser).toHaveBeenCalledWith('2023-01-03');
+
+        controller.selectAll();
+        controller.enableAll();
+
+        expect(controller.getState()).toEqual([{from: undefined, to: undefined}]);
+
+        controller.clear();
+
+        expect(controller.getState()).toEqual([]);
     });
 });
