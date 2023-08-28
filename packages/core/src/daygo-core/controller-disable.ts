@@ -1,9 +1,9 @@
 import { createBaseController } from "./controller-base";
 import type { ControllerCommand, CustomParser } from "../types/type";
-import type { DateRange, IBus } from "../utils";
+import type { IBus, InitStateDates } from "../utils";
 
 export type DisableControllerInit = {
-    disabledDates?: Array<Date | DateRange | string>;
+    disabledDates?: InitStateDates;
     customParser?: CustomParser;
 }
 

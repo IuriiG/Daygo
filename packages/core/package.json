@@ -4,6 +4,7 @@
     "description": "The framework agnostic core that powers Daygo - headless datepicker library",
     "author": "IuriiG",
     "license": "MIT",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/IuriiG/reactive_dp.git",
@@ -11,21 +12,19 @@
     },
     "homepage": "https://github.com/IuriiG/reactive_dp",
     "types": "build/lib/index.d.ts",
-    "main": "build/lib/index.js",
-    "module": "build/lib/index.esm.js",
+    "main": "build/lib/index.cjs.js",
+    "module": "build/lib/index.es.js",
     "exports": {
         ".": {
             "types": "./build/lib/index.d.ts",
-            "import": "./build/lib/index.mjs",
-            "default": "./build/lib/index.js"
+            "import": "./build/lib/index.es.js",
+            "require": "./build/lib/index.cjs.js"
         },
         "./package.json": "./package.json"
     },
     "sideEffects": false,
     "files": [
-        "build/lib/*",
-        "build/umd/*",
-        "src"
+        "build/lib/*"
     ],
     "keywords": [
         "date",
@@ -38,11 +37,13 @@
         "daygo"
     ],
     "scripts": {
+        "clear": "rimraf ./build",
         "lint:fix": "eslint --ext .ts, ./src --fix",
         "test:eslint": "eslint --ext .ts, ./src",
         "test:types": "tsc",
-        "test": "npm run test:eslint && npm run test:types && vitest run",
+        "test": "npm run test:eslint && npm run test:types && vitest run --config ../../vitest.config.ts",
         "test:watch": "vitest",
-        "build:types": "tsc --build"
+        "build:types": "tsc --build ./tsconfig.json",
+        "build": "npm run test && vite build --config ./vite.config.ts"
     }
 }

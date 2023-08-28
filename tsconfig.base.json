@@ -23,6 +23,7 @@
         "emitDeclarationOnly": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "isolatedModules": true,
         "baseUrl": ".",
         "composite": true,
         "types": [
@@ -32,8 +33,5 @@
             "@daygo/core": ["packages/core/src"],
             "@daygo/react": ["packages/react/src"]
         }
-    },
-    "include": [
-        "./vite.config.ts"
-    ]
+    }
 }

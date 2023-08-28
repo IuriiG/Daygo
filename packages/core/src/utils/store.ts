@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import { getRange } from "../tools";
+import { getRange, toValidRange } from "../tools";
 import { castDate, isDate, isString } from "./common";
 import { addDay, subtractDay } from "./date";
 import { isInRange, rangeOf } from "./helpers";
@@ -26,7 +26,7 @@ export interface IStore {
 }
 
 export function is (store: IStore, date: Date): boolean {
-	return Boolean(store.query(date));
+	return store.query(date);
 }
 
 export function add (store: IStore, date: Date | DateRange): void {
@@ -61,12 +61,14 @@ export function replace (store: IStore, range: Date | DateRange): void {
 	add(store, range);
 }
 
-export type EventStoreInit = {
-    initState?: Array<Date | DateRange | string>;
+export type InitStateDates = Array<Date | DateRangeRaw | string>;
+
+export type StoreInit = {
+    initState?: InitStateDates;
     customParser?: (date: string) => Date;
 }
 
-export function initStateToRanges (init?: EventStoreInit): DateRange[] {
+export function initStateToRanges (init?: StoreInit): DateRange[] {
 	const { initState, customParser } = init || {};
 
 	if (!Array.isArray(initState)) return [];
@@ -76,7 +78,7 @@ export function initStateToRanges (init?: EventStoreInit): DateRange[] {
 			return getRange(date);
 		}
 
-		return item;
+		return toValidRange(item, customParser);
 	});
 }
 

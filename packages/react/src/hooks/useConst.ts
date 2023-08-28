@@ -3,11 +3,11 @@ import { isFunction } from "@daygo/core";
 import type { MutableRefObject } from "react";
 
 export function useConst<T>(initialState: T | (() => T)): T {
-    const ref = useRef<T>(null) as MutableRefObject<T>;
+	const ref = useRef<T>(null) as MutableRefObject<T>;
 
-    if (!ref.current) {
-        ref.current = isFunction(initialState) ? initialState() : initialState;
-    }
+	if (!ref.current) {
+		ref.current = isFunction(initialState) ? initialState() : initialState;
+	}
 
-    return ref.current;
+	return ref.current;
 }

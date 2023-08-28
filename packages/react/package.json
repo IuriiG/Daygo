@@ -11,23 +11,25 @@
     },
     "homepage": "https://github.com/IuriiG/reactive_dp",
     "types": "build/lib/index.d.ts",
-    "main": "build/lib/index.js",
-    "module": "build/lib/index.esm.js",
+    "main": "build/lib/index.cjs.js",
+    "module": "build/lib/index.es.js",
     "exports": {
         ".": {
             "types": "./build/lib/index.d.ts",
-            "import": "./build/lib/index.mjs",
-            "default": "./build/lib/index.js"
+            "import": "./build/lib/index.es.js",
+            "default": "./build/lib/index.cjs.js"
         },
         "./package.json": "./package.json"
     },
     "sideEffects": false,
     "scripts": {
+        "clear": "rimraf ./build",
         "test:eslint": "eslint --ext .ts, ./src",
         "test:types": "tsc",
         "test": "npm run test:esling && npm run test:types && vitest run",
         "test:watch": "vitest",
-        "build:types": "tsc --build"
+        "build:types": "tsc --build ./tsconfig.json",
+        "build": "vite build --config ./vite.config.ts"
     },
     "files": [
         "build/lib/*",
@@ -43,7 +45,6 @@
     },
     "dependencies": {
         "@daygo/core": "file:packages/core",
-        "@types/node": "^18.17.11",
         "use-sync-external-store": "^1.2.0"
     },
     "peerDependencies": {

@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { IStore } from "../utils";
+import type { DateRange, DateRangeRaw, IStore } from "../utils";
 
 export type ToCamelCase<T extends string> = T extends `${infer A}_${infer B}${infer C}`
     ? `${Lowercase<A>}${Uppercase<B>}${ToCamelCase<C>}`
@@ -25,8 +24,12 @@ export type _BasicControllerAction<T extends (...args: any) => any> = T extends 
 
 export type IsUnknown<T> = unknown extends T ? true : false;
 
+export type IsDateRange<T> = DateRange extends T ? true : false;
+
 export type BasicControllerAction<T extends (...args: any) => any> = T extends (store: IStore, date: infer A) => infer R
     ? IsUnknown<A> extends false
-        ? (date: A | string) => R
+        ? IsDateRange<A> extends false
+            ? (date: Date | string) => R
+            : (date: Date | DateRangeRaw | string) => R
         : () => R
     : never;

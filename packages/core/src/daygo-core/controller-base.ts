@@ -17,9 +17,9 @@ import {
 } from "../utils";
 import { toValidRange } from "../tools";
 import type {
-	DateRange,
 	IBus,
-	IStore } from "../utils";
+	IStore,
+	InitStateDates } from "../utils";
 import type { ControllerCommand, CustomParser } from '../types/type';
 import type { BasicControllerAction } from '../types/type-utils';
 
@@ -30,7 +30,7 @@ export enum SharedCommand {
 type StoreAction<T> = (store: IStore, ...args: any[]) => T;
 
 export type InitState = {
-    initState?: Array<Date | DateRange | string>;
+    initState?: InitStateDates;
     customParser?: CustomParser;
 }
 
