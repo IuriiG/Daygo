@@ -28,5 +28,8 @@ export default defineConfig({
             output: { globals }
         }
     },
-    plugins: [dts()]
+    plugins: [dts({
+        pathsToAliases: false,
+        exclude: ["src/**/*.test.ts"]
+    })]
 });
