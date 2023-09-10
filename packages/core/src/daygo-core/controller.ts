@@ -11,13 +11,14 @@ import type { DisableController } from "./controller-disable";
 import type { FocusCommand, FocusController } from "./controller-focus";
 
 export type ControllerConfig = {
-    selectedDates?: InitStateDates;
-    disabledDates?: InitStateDates;
-    customParser?: CustomParser;
+    readonly selectedDates?: InitStateDates;
+    readonly disabledDates?: InitStateDates;
+    readonly customParser?: CustomParser;
 }
 
 type ControllerType = FocusController & SelectController & DisableController & {
     clear: () => void;
+	resetDefaults: () => void;
     getState: () => DateRange[];
     getConfig: () => ControllerConfig | undefined;
     onFocusChange: (subscriber: EventSubscriber) => () => void;
@@ -26,11 +27,11 @@ type ControllerType = FocusController & SelectController & DisableController & {
 };
 
 export type Controller = Simplify<Readonly<{
-    [P in keyof ControllerType]: ControllerType[P];
+    readonly [P in keyof ControllerType]: ControllerType[P];
 }>>;
 
 export type ControllerWithBus = Controller & {
-    $$bus: IBus<ControllerCommand>;
+    readonly $$bus: IBus<ControllerCommand>;
 }
 
 export const createController = (config?: ControllerConfig): Controller => {
@@ -51,6 +52,11 @@ export const createController = (config?: ControllerConfig): Controller => {
 		clear: () => {
 			disableController.enableAll();
 			selectController.unselectAll();
+		},
+		resetDefaults: () => {
+			focusController.resetDefaultsFocus();
+			selectController.resetDefaultsSelected();
+			disableController.resetDefaultsDisabled();
 		},
 		getState: () => excludeState(controller.getSelected(), controller.getDisabled()),
 		onFocusChange: (subscriber: EventSubscriber) => {

@@ -18,6 +18,7 @@ export type DateRangeRaw = {
 
 export interface IStore {
     clear(): void;
+	reset: () => void;
     subscribe: Subscribe;
     getState(): DateRange[];
     query(date: Date): boolean;
@@ -56,6 +57,10 @@ export function clear (store: IStore) {
 	store.clear();
 }
 
+export function reset (store: IStore) {
+	store.reset();
+}
+
 export function replace (store: IStore, range: Date | DateRange): void {
 	clear(store);
 	add(store, range);
@@ -86,26 +91,24 @@ export function createStore (init: DateRange[]): IStore {
 	const { notify, subscribe } = createObservable();
 	let state: DateRange[] = init;
 
-	const publish = (dateRange: DateRange) => {
-		state = push(state, dateRange);
+	const set = (next: DateRange[]) => {
+		state = next;
 		notify();
 	};
 
-	const remove = (dateRange: DateRange) => {
-		state = pop(state, dateRange);
-		notify();
-	};
+	const clear = () => set([]);
 
-	const clear = () => {
-		state = [];
-		notify();
-	};
+	const reset = () => set(init);
+
+	const remove = (dateRange: DateRange) => set(pop(state, dateRange));
+
+	const publish = (dateRange: DateRange) => set(push(state, dateRange));
 
 	const query = (date: Date) => includes(state, date);
 
 	const getState = () => sort(state);
 
-	return { publish, query, remove, clear, getState, subscribe };
+	return { publish, query, reset, remove, clear, getState, subscribe };
 }
 
 export function push (ranges: DateRange[], range: DateRange): DateRange[] {

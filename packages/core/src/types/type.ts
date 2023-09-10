@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Controller, FocusCommand, SharedCommand } from "../daygo-core";
+import type { SharedCommand } from "../utils";
+import type { Controller, FocusCommand } from "../daygo-core";
 
 export type FocusControllerCommand = {
     type: FocusCommand;

@@ -28,7 +28,8 @@ export const focusCommandHandlers = {
 	FOCUS_NEXT_MONTH: addMonth,
 	FOCUS_PREW_YEAR: subtractYear,
 	FOCUS_PREV_MONTH: subtractMonth,
-	FOCUS_DATE: toDateWrapper(toDate)
+	FOCUS_DATE: toDateWrapper(toDate),
+	RESET_DEFAULTS_FOCUS: () => null
 };
 
 export type FocusHandlersMap = typeof focusCommandHandlers;

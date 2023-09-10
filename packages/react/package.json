@@ -23,13 +23,12 @@
     },
     "sideEffects": false,
     "scripts": {
-        "clear": "rimraf ./build",
         "test:eslint": "eslint --ext .ts, ./src",
         "test:types": "tsc",
         "test": "npm run test:esling && npm run test:types && vitest run",
         "test:watch": "vitest",
-        "build:types": "tsc --build ./tsconfig.json",
-        "build": "vite build --config ./vite.config.ts"
+        "build": "vite build --config ./vite.config.ts",
+        "build:dev": "vite build --watch --config ./vite.config.ts"
     },
     "files": [
         "build/lib/*",

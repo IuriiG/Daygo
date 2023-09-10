@@ -15,5 +15,7 @@ export default defineConfig({
             fileName: (format, name) => `${name}.${format}.js`
         }
     },
-    plugins: [dts()]
+    plugins: [dts({
+        exclude: ["src/**/*.test.ts"]
+    })]
 });

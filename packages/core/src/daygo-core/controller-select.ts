@@ -4,8 +4,8 @@ import type { ControllerCommand, CustomParser } from "../types/type";
 import type { IBus, InitStateDates } from "../utils";
 
 export type SelectControllerInit = {
-    selectedDates?: InitStateDates;
-    customParser?: CustomParser;
+    readonly selectedDates?: InitStateDates;
+    readonly customParser?: CustomParser;
 }
 
 export const createSelectController = (bus: IBus<ControllerCommand>, init: SelectControllerInit) => {
@@ -21,12 +21,13 @@ export const createSelectController = (bus: IBus<ControllerCommand>, init: Selec
 		isSelected: basicController.is,
 		selectDate: basicController.replace,
 		unselectDate: basicController.remove,
-		unselectAll: basicController.reset,
+		unselectAll: basicController.clear,
 		getSelected: basicController.getState,
 		toggleSelectDate: basicController.toggle,
 		selectDateMultiple: basicController.add,
 		onSelectChange: basicController.subscribe,
 		selectAll: basicController.addAll,
+		resetDefaultsSelected: basicController.reset,
 		startStopRangeAuto: bind(activateSelector),
 		updateRangeAuto: bind(updateSelector)
 	};

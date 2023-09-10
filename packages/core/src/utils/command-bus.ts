@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import { createEffect } from "./effect";
 import { createObservable } from "./observable";
 
@@ -6,21 +7,30 @@ export interface IBus<T> {
     subscribe: (subscriber: (command: T) => void) => () => void;
 }
 
+export enum SharedCommand {
+    UPDATE = 'UPDATE'
+}
+
 export const createCommandBus = <T>(): IBus<T> => {
-	const queue: Set<T> = new Set();
+	const queue: T[] = [];
+	let cursor = 0;
 
 	const observable = createObservable();
-	const clearQueue = createEffect(() => queue.clear());
+	const clearQueue = createEffect(() => {
+		queue.splice(cursor + 1);
+		cursor = 0;
+	});
 
 	const send = (command: T) => {
-		queue.add(command);
+		queue.push(command);
 		observable.notify();
 	};
 
 	const subscribe = (subscriber: (command: T) => void) => {
 		return observable.subscribe(() => {
-			queue.forEach((command) => {
+			queue.forEach((command, i) => {
 				subscriber(command);
+				if (cursor < i) cursor = i;
 			});
 			clearQueue();
 		});

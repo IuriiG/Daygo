@@ -16,6 +16,7 @@ import {
 import { createDay, updateDay } from "./day";
 import { focusCommandHandlers } from "./controller-focus";
 import { createController } from "./controller";
+import type { Simplify } from "../types";
 import type {
 	Subscribe,
 	WeekStarts } from "../utils";
@@ -24,12 +25,15 @@ import type { FocusCommand } from "./controller-focus";
 import type { Controller, ControllerConfig, ControllerWithBus } from "./controller";
 import type { ControllerCommand, FocusControllerCommand } from "../types/type";
 
-export type DatePickerConfig = Readonly<ControllerConfig & {
-    isFixed?: boolean;
-    controller?: Controller;
-    weekStartsOn?: WeekStarts;
-    defaultMonth?: Date | string;
-}>
+export type ControlledDatePickerConfig = {
+	readonly controller: Controller;
+	readonly isFixed?: boolean;
+	readonly weekStartsOn?: WeekStarts;
+	readonly defaultMonth?: Date | string;
+}
+
+export type UncontrolledDatePickerConfig = Simplify<ControllerConfig & Omit<ControlledDatePickerConfig, 'controller'>>;
+export type DatePickerConfig = UncontrolledDatePickerConfig | ControlledDatePickerConfig;
 
 export interface IDatePicker {
     readonly month: IDay[];
@@ -40,29 +44,31 @@ export interface IDatePicker {
     readonly useController: (controller: Controller) => void;
 }
 
-export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
+export function createDatePicker (config: ControlledDatePickerConfig): IDatePicker;
+export function createDatePicker (config?: UncontrolledDatePickerConfig): IDatePicker;
+export function createDatePicker (config: DatePickerConfig = {}): IDatePicker {
 	const {
 		defaultMonth,
-		controller: external,
 		isFixed = false,
 		weekStartsOn = 1,
+		// @ts-ignore
+		controller: external,
 		...controllerConfig
-	} = config || {};
+	} = config;
 
-	const customParser = config?.customParser
-        || external?.getConfig()?.customParser;
+	let connectionDispose: () => void;
+	let controller: Controller = external ?? createController(controllerConfig);
 
-	let version = 0;
-
-	let monthGrid: IDay[] = [];
-	let focusedDate = setFirstDayOfMonth(
+	const customParser = controller.getConfig()?.customParser;
+	const parseDefaultMonth = () => setFirstDayOfMonth(
 		defaultMonth
 			? castDate(defaultMonth, customParser)
 			: today()
 	);
 
-	let connectionDispose: () => void;
-	let controller = external ?? createController(controllerConfig);
+	let version = 0;
+	let monthGrid: IDay[] = [];
+	let focusedDate = parseDefaultMonth();
 
 	const observable = createObservable();
 	const share = createShare<ControllerCommand>();
@@ -85,6 +91,10 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
 	const connect = () => (controller as ControllerWithBus).$$bus.subscribe(share.next);
 
 	const useController = (next: Controller) => {
+		if (controller === next) {
+			return;
+		}
+
 		scheduleRender();
 		connectionDispose();
 
@@ -92,20 +102,23 @@ export const createDatePicker = (config?: DatePickerConfig): IDatePicker => {
 		connectionDispose = connect();
 	};
 
+	const updateFocusedDate = (date: Date) => {
+		date = setFirstDayOfMonth(date);
+
+		if (isSame(focusedDate, date)) {
+			return;
+		}
+
+		focusedDate = date;
+		scheduleRender();
+	};
+
 	const commandHandler = (command: ControllerCommand) => {
 		const handler = focusCommandHandlers[command.type as FocusCommand];
 
 		if (handler) {
-			const previousDate = focusedDate;
-			const { payload } = command as FocusControllerCommand;
-
-			focusedDate = setFirstDayOfMonth(handler(focusedDate, payload));
-
-			if (isSame(previousDate, focusedDate)) {
-				return;
-			}
-
-			scheduleRender();
+			const date = handler(focusedDate, (command as FocusControllerCommand).payload);
+			updateFocusedDate(date ?? parseDefaultMonth());
 			return;
 		}
 

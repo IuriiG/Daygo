@@ -37,13 +37,12 @@
         "daygo"
     ],
     "scripts": {
-        "clear": "rimraf ./build",
         "lint:fix": "eslint --ext .ts, ./src --fix",
         "test:eslint": "eslint --ext .ts, ./src",
         "test:types": "tsc",
         "test": "npm run test:eslint && npm run test:types && vitest run --config ../../vitest.config.ts",
-        "test:watch": "vitest",
-        "build:types": "tsc --build ./tsconfig.json",
-        "build": "npm run test && vite build --config ./vite.config.ts"
+        "test:watch": "vitest --config ../../vitest.config.ts",
+        "build": "npm run test && vite build --config ./vite.config.ts",
+        "build:dev": "vite build --watch --config ./vite.config.ts"
     }
 }

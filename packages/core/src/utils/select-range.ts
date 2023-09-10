@@ -1,30 +1,30 @@
 import { getRange } from "../tools";
 import { isSame } from "./date";
-import type { DateRange, IStore } from "./store";
+import { rangeOf } from "./helpers";
+import { type IStore, replace } from "./store";
 
 export function createRangeSelector() {
 	let isActive = false;
-	let rangeEvent: DateRange | null = null;
+	let rangeStart: Date | null = null;
 
 	const updateSelector = (store: IStore, date: Date) => {
-		if (!isActive || !rangeEvent) return;
+		const [current] = store.getState();
 
-		const { from = null, to = null }  = rangeEvent;
+		if (!isActive || !current || !rangeStart) return;
 
-		if (isSame(to, date)) return;
+		const next = rangeOf(rangeStart, date);
 
-		store.remove(rangeEvent);
-		rangeEvent = { from: from || date, to: date };
-		store.publish(rangeEvent);
+		if (isSame(current.from, next.from) && isSame(current.to, next.to)) return;
+
+		replace(store, next);
 	};
 
 	const activateSelector = (store: IStore, date: Date) => {
 		isActive = !isActive;
 		if (!isActive) return;
 
-		rangeEvent && store.remove(rangeEvent);
-		rangeEvent = getRange(date);
-		store.publish(rangeEvent);
+		rangeStart = date;
+		replace(store, getRange(date));
 	};
 
 	return {

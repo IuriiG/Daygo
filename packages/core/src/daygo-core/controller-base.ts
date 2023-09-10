@@ -3,6 +3,7 @@
 /* eslint-disable prefer-rest-params */
 
 import {
+	SharedCommand,
 	add,
 	addAll,
 	castDate,
@@ -13,7 +14,8 @@ import {
 	is,
 	isValidDateInput,
 	remove,
-	replace
+	replace,
+	reset
 } from "../utils";
 import { toValidRange } from "../tools";
 import type {
@@ -23,15 +25,11 @@ import type {
 import type { ControllerCommand, CustomParser } from '../types/type';
 import type { BasicControllerAction } from '../types/type-utils';
 
-export enum SharedCommand {
-    UPDATE = 'UPDATE'
-}
-
 type StoreAction<T> = (store: IStore, ...args: any[]) => T;
 
 export type InitState = {
-    initState?: InitStateDates;
-    customParser?: CustomParser;
+    readonly initState?: InitStateDates;
+    readonly customParser?: CustomParser;
 }
 
 export const bindAction = (store: IStore, customParser?: CustomParser) => {
@@ -63,7 +61,8 @@ export const createBaseController = (bus: IBus<ControllerCommand>, init: InitSta
 		bind,
 		is: bind(is),
 		add: bind(add),
-		reset: bind(clear),
+		reset: bind(reset),
+		clear: bind(clear),
 		remove: bind(remove),
 		addAll: bind(addAll),
 		replace: bind(replace),

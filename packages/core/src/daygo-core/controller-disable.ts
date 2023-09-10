@@ -3,8 +3,8 @@ import type { ControllerCommand, CustomParser } from "../types/type";
 import type { IBus, InitStateDates } from "../utils";
 
 export type DisableControllerInit = {
-    disabledDates?: InitStateDates;
-    customParser?: CustomParser;
+    readonly disabledDates?: InitStateDates;
+    readonly customParser?: CustomParser;
 }
 
 export const createDisableController = (bus: IBus<ControllerCommand>, init: DisableControllerInit) => {
@@ -18,7 +18,8 @@ export const createDisableController = (bus: IBus<ControllerCommand>, init: Disa
 		isDisabled: basicController.is,
 		enableDate: basicController.remove,
 		disableDate: basicController.add,
-		enableAll: basicController.reset,
+		enableAll: basicController.clear,
+		resetDefaultsDisabled: basicController.reset,
 		getDisabled: basicController.getState,
 		disableDateToggle: basicController.toggle,
 		onDisableChange: basicController.subscribe,

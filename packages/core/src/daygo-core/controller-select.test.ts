@@ -1,8 +1,7 @@
 import { today } from "../utils/date";
 import { flushPromises } from "../utils/test-utils";
-import { SharedCommand } from "./controller-base";
+import { type IBus, SharedCommand } from "../utils/command-bus";
 import { createSelectController } from "./controller-select";
-import type { IBus } from "../utils/command-bus";
 import type { ControllerCommand } from "../types/type";
 
 describe('Core: controller select', () => {
