@@ -1,15 +1,17 @@
 import path from "node:path";
 import { defineConfig } from 'vite';
 import dts from "vite-plugin-dts";
+// import react from "@vitejs/plugin-react";
 
 const globals = {
-    react: 'React',
-    // 'react-dom': 'ReactDOM',
+    'react': 'React',
+    'react-dom': 'ReactDOM',
     '@daygo/core': 'DaygoCore',
     'use-sync-external-store/shim': 'UseSyncExternalStore'
 };
 
 const external = (moduleName: string) => Object.keys(globals).includes(moduleName);
+
 
 export default defineConfig({
     build: {

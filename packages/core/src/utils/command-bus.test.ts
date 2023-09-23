@@ -18,18 +18,21 @@ describe('Utils: command-bus', () => {
 		const command3 = 'command3';
 
 		bus.send(command1);
+		bus.send(command2);
 
 		await flushPromises();
 
-		expect(subscriber1).toHaveBeenCalledTimes(1);
-		expect(subscriber2).toHaveBeenCalledTimes(1);
-		expect(subscriber3).toHaveBeenCalledTimes(1);
+		expect(subscriber1).toHaveBeenCalledTimes(2);
+		expect(subscriber2).toHaveBeenCalledTimes(2);
+		expect(subscriber3).toHaveBeenCalledTimes(2);
 
 		expect(subscriber1).toHaveBeenCalledWith(command1);
 		expect(subscriber2).toHaveBeenCalledWith(command1);
 		expect(subscriber3).toHaveBeenCalledWith(command1);
+		expect(subscriber1).toHaveBeenCalledWith(command2);
+		expect(subscriber2).toHaveBeenCalledWith(command2);
+		expect(subscriber3).toHaveBeenCalledWith(command2);
 
-		bus.send(command2);
 		bus.send(command3);
 
 		await flushPromises();

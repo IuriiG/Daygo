@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import type { Controller } from "@daygo/core";
 import type { FC, PropsWithChildren } from "react";
 

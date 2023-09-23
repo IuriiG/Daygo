@@ -12,12 +12,12 @@ export enum SharedCommand {
 }
 
 export const createCommandBus = <T>(): IBus<T> => {
-	const queue: T[] = [];
+	let queue: T[] = [];
 	let cursor = 0;
 
 	const observable = createObservable();
 	const clearQueue = createEffect(() => {
-		queue.splice(cursor + 1);
+		queue = queue.slice(cursor + 1);
 		cursor = 0;
 	});
 
