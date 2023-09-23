@@ -1,0 +1,60 @@
+{
+    "name": "@daygo/react",
+    "version": "1.0.0",
+    "description": "Hooks for creating and manipulating date picker components in React",
+    "author": "IuriiG",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/IuriiG/reactive_dp.git",
+        "directory": "packages/react"
+    },
+    "homepage": "https://github.com/IuriiG/reactive_dp",
+    "types": "build/lib/index.d.ts",
+    "main": "build/lib/index.cjs.js",
+    "module": "build/lib/index.es.js",
+    "exports": {
+        ".": {
+            "types": "./build/lib/index.d.ts",
+            "import": "./build/lib/index.es.js",
+            "default": "./build/lib/index.cjs.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "scripts": {
+        "test:eslint": "eslint --ext .ts, ./src",
+        "test:types": "tsc",
+        "test": "npm run test:eslint && npm run test:types && vitest run --config ./vitest.config.ts",
+        "test:watch": "vitest --config ./vitest.config.ts",
+        "build": "vite build --config ./vite.config.ts",
+        "build:dev": "vite build --watch --config ./vite.config.ts"
+    },
+    "files": [
+        "build/lib/*"
+    ],
+    "devDependencies": {
+        "@types/react": "^18.0.14",
+        "@types/react-dom": "^18.0.5",
+        "@types/use-sync-external-store": "^0.0.3",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    },
+    "dependencies": {
+        "@daygo/core": "file:packages/core",
+        "use-sync-external-store": "^1.2.0"
+    },
+    "peerDependencies": {
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+        "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0",
+        "react-native": "*"
+    },
+    "peerDependenciesMeta": {
+        "react-dom": {
+            "optional": true
+        },
+        "react-native": {
+            "optional": true
+        }
+    }
+}

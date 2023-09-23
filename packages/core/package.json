@@ -1,0 +1,48 @@
+{
+    "name": "@daygo/core",
+    "version": "1.0.0",
+    "description": "The framework agnostic core that powers Daygo - headless datepicker library",
+    "author": "IuriiG",
+    "license": "MIT",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/IuriiG/reactive_dp.git",
+        "directory": "packages/core"
+    },
+    "homepage": "https://github.com/IuriiG/reactive_dp",
+    "types": "build/lib/index.d.ts",
+    "main": "build/lib/index.cjs.js",
+    "module": "build/lib/index.es.js",
+    "exports": {
+        ".": {
+            "types": "./build/lib/index.d.ts",
+            "import": "./build/lib/index.es.js",
+            "require": "./build/lib/index.cjs.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "files": [
+        "build/lib/*"
+    ],
+    "keywords": [
+        "date",
+        "datepicker",
+        "reactive",
+        "reactivity",
+        "batching",
+        "library",
+        "headless",
+        "daygo"
+    ],
+    "scripts": {
+        "lint:fix": "eslint --ext .ts, ./src --fix",
+        "test:eslint": "eslint --ext .ts, ./src",
+        "test:types": "tsc",
+        "test": "npm run test:eslint && npm run test:types && vitest run --config ./vitest.config.ts",
+        "test:watch": "vitest --config ./vitest.config.ts",
+        "build": "npm run test && vite build --config ./vite.config.ts",
+        "build:dev": "vite build --watch --config ./vite.config.ts"
+    }
+}
