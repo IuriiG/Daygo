@@ -4,9 +4,6 @@ on:
   release:
     types: [created]
 
-env:
-  NODE_AUTH_TOKEN: ${{ secrets.DAYGO_NPM_TOKEN }}
-
 jobs:
   test:
     uses: IuriiG/Daygo/.github/workflows/pr.yml@master
@@ -35,9 +32,13 @@ jobs:
         run: |
           npm run --prefix packages/core build
           npm publish ./packages/core --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.DAYGO_NPM_TOKEN }}
 
       - if: ${{ startsWith(github.ref_name, 'react') }}
         name: "Publish react package"
         run: |
           npm run --prefix packages/react build
           npm publish ./packages/react --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.DAYGO_NPM_TOKEN }}
