@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  release:
+    types: [created]
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.DAYGO_NPM_TOKEN }}
+
+jobs:
+  test:
+    uses: IuriiG/Daygo/.github/workflows/pr.yml@master
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: "Instal dependencies"
+        run: npm ci
+
+      - if: ${{ startsWith(github.ref_name, 'core') }}
+        name: "Publish core package"
+        run: |
+          npm run --prefix packages/core build
+          npm publish ./packages/core
+
+      - if: ${{ startsWith(github.ref_name, 'react') }}
+        name: "Publish react package"
+        run: |
+          npm run --prefix packages/react build
+          npm publish ./packages/react
