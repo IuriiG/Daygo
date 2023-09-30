@@ -31,7 +31,7 @@ jobs:
         name: "Publish core package"
         run: |
           npm run --prefix packages/core build
-          npm publish ./packages/core --access=public
+          npm publish ./packages/core --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.DAYGO_NPM_TOKEN }}
 
@@ -39,6 +39,6 @@ jobs:
         name: "Publish react package"
         run: |
           npm run --prefix packages/react build
-          npm publish ./packages/react --access=public
+          npm publish ./packages/react --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.DAYGO_NPM_TOKEN }}
