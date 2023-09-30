@@ -1,6 +1,7 @@
 {
     "name": "@daygo/react",
     "version": "1.0.0",
+    "private": false,
     "description": "Hooks for creating and manipulating date picker components in React",
     "author": "IuriiG",
     "license": "MIT",

@@ -33,10 +33,10 @@ jobs:
         name: "Publish core package"
         run: |
           npm run --prefix packages/core build
-          npm publish ./packages/core
+          npm publish ./packages/core --access=public
 
       - if: ${{ startsWith(github.ref_name, 'react') }}
         name: "Publish react package"
         run: |
           npm run --prefix packages/react build
-          npm publish ./packages/react
+          npm publish ./packages/react --access=public
