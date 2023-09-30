@@ -1,6 +1,7 @@
 {
     "name": "@daygo/core",
     "version": "1.0.0",
+    "private": false,
     "description": "The framework agnostic core that powers Daygo - headless datepicker library",
     "author": "IuriiG",
     "license": "MIT",
