@@ -29,5 +29,21 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run --prefix packages/core build
-    - run: npm run --prefix packages/core test
-    - run: npm run --prefix packages/react test
+    - run: |
+        npm run --prefix packages/core test
+        npm run --prefix packages/core coverage
+    - run: |
+        npm run --prefix packages/react test
+        npm run --prefix packages/react coverage
+    - name: Coveralls:core
+      uses: coverallsapp/github-action@master
+      with:
+        base-path: packages/core
+        path-to-lcov: "./packages/core/coverage/lcov.info"
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Coveralls:react
+      uses: coverallsapp/github-action@master
+      with:
+        base-path: packages/react
+        path-to-lcov: "./packages/react/coverage/lcov.info"
+        github-token: ${{ secrets.GITHUB_TOKEN }}

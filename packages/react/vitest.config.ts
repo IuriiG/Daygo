@@ -7,6 +7,11 @@ export default defineConfig({
         name: 'DaygoReact',
         environment: 'happy-dom',
         restoreMocks: true,
-        globals: true
+        globals: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'lcov'],
+            include: ['src/**/*.tsx', 'src/**/*.ts'],
+        },
     }
 });

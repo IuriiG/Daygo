@@ -6,6 +6,11 @@ export default defineConfig({
     test: {
         name: 'DaygoCore',
         restoreMocks: true,
-        globals: true
+        globals: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'lcov'],
+            include: ['src/**/*.ts'],
+        },
     }
 });

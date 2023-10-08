@@ -41,6 +41,7 @@
         "lint:fix": "eslint --ext .ts, ./src --fix",
         "test:eslint": "eslint --ext .ts, ./src",
         "test:types": "tsc",
+        "coverage": "vitest run --coverage --config ./vitest.config.ts",
         "test": "npm run test:eslint && npm run test:types && vitest run --config ./vitest.config.ts",
         "test:watch": "vitest --config ./vitest.config.ts",
         "build": "vite build --config ./vite.config.ts",

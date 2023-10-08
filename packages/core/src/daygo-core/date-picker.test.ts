@@ -323,6 +323,12 @@ describe('Core: date-picker', () => {
 		await flushPromises();
 
 		expect(subscriber).toHaveBeenCalledTimes(3);
+
+		datePicker.useController(externalController);
+
+		await flushPromises();
+
+		expect(subscriber).toHaveBeenCalledTimes(3);
 	});
 
 	it ('datePicker: defaultMonth', async () => {
